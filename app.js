@@ -257,7 +257,7 @@ function updateSheet(preset_days, preset_hours, skip_conf) {
       fetchAndOutputData();
     })
   } else if (days && hours && !confirmed) {
-    updateSheet(preset_days, preset_hours, skip_conf);
+    updateSheet(days, hours, skip_conf);
   }
 }
 
