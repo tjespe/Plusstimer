@@ -236,7 +236,7 @@ let days, hours;
 function updateSheet(preset_days, preset_hours, skip_conf) {
   q('pre').innerHTML = ""
   days = preset_days || prompt('Hvor mange hele DAGER fravær har du på skolearena?\nf.eks. 2', days);
-  hours = preset_hours || prompt('Hvor mange TIMER fravær har du på skolearena?\nf.eks. 23,75', hours);
+  hours = preset_hours || prompt('Hvor mange TIMER fravær har du på skolearena?\nf.eks. 23,75\nNB: Hvis du har gjort frivillig arbeid som f.eks. Åpen Dag-guide kan du trekke det fra her.', hours);
   confirmed = skip_conf || confirm("Er dette riktig informasjon?:\nDager: "+days+"\nTimer: "+hours);
   if (days && hours && confirmed) {
     q('#output').style.display = 'block';
