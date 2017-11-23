@@ -144,8 +144,7 @@ function fetchAndOutputData() {
         hours = range.values[version.hours[0]][version.hours[1]];
         appendPre(range.values[version.plusstimer[0]][version.plusstimer[1]] + 'plusstimer');
         q('#result>.number').innerHTML = Number(range.values[0][3]);
-        q('#result').style.display = 'block';
-        q('#caption').style.display = 'block';
+        q('#result-wrapper').style.display = 'flex';
         q('#caption>a').innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
         q('#output').style.display = 'none';
       } else { // Handle unsuccessful validation of response
