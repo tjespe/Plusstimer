@@ -76,7 +76,7 @@ pre {
   max-width: 210px;
   max-height: 180px;
   margin: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 2em;
