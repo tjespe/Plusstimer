@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>Plusstimer</title>
-  <link href="https://habadam.tk/assets/standard.css" rel="stylesheet">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,10 +17,17 @@
       <div class="number"></div>
       <description>plusstimer</description>
     </div>
-    <div id="caption"><a href="#" onclick="updateSheet()">Klikk her for å oppdatere fravær</a></div>
+    <div id="caption"><a href onclick="updateSheet()">Klikk her for å oppdatere fravær</a></div>
   </div>
+  <form id="update">
+    <h4>Hvor mange dager fravær har du på skolearena?</h4>
+    <input type="text" name="days">
+    <h4>Hvor mange klokketimer fravær har du på skolearena?</h4>
+    <input type="text" name="hours">
+    <h6>Hvis du har gjort ekstra skoletimer som f.eks. guide på åpen dag kan du trekke det fra før du skriver inn tallet over</h6>
+  </form>
   <pre id="output">
-    <div id="authorize-div" style="display: none">
+    <div id="authorize-div">
       <span>Du må autorisere med Google Disk fordi regnearket blir lagret på din Disk</span>
       <button onclick="handleAuthClick(event)">Autoriser</button>
     </div>

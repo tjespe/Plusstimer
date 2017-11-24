@@ -48,7 +48,7 @@ function handleAuthResult(authResult) {
     loadGDriveApi();
   } else {
     // Show auth UI, allowing the user to initiate authorization by clicking a button.
-    authDiv.style.display = 'inline';
+    authDiv.style.display = 'block';
   }
 }
 
@@ -266,6 +266,5 @@ function updateSheet(preset_days, preset_hours, skip_conf) {
 * @param {string} message Text to be placed in pre element.
 */
 function appendPre(message) {
-  let textContent = document.createTextNode(message + '\n');
-  document.getElementById('output').appendChild(textContent);
+  q("pre").innerHTML += "<h4>"+message+"</h4>"
 }
