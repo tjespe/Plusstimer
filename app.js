@@ -21,18 +21,12 @@ let version = { // Info regarding the current version of the spreadsheet
 let firstVisit = false; // Whether or not the user has visited this page earlier
 
 /**
-* compatible_versions is an array objects where each object looks like this:
-{
-  key: "Plusstimer 2016 vår Canada Random Words",   // A string of random words only found in that spreadsheet
-  days: "B6",                                       // The cell that contains amount of days abscence
-  hours: "D7"                                       // The cell that contains amount of hours abscence
-}
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them
 */
 let compatible_versions = [{
-  key: "Plusstimer 2017 høst Panda Bever",
-  days: "Plusstimer!D7",
-  hours: "Plusstimer!E7"
+  key: "Plusstimer 2017 høst Panda Bever",    // A string of random words only found in that spreadsheet
+  days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
+  hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
 }];
 
 /**
@@ -203,7 +197,7 @@ function copyDataFromOldSheet () {
                 range: compatible_versions[0].hours,
               }).then(function(response) {
                 let hours = response.result.values[0][0]; // Save response
-                updateSheet(days, hours, true); // Update the new sheet with the variables from the old sheet
+                updateSheet(days, hours); // Update the new sheet with the variables from the old sheet
                 trashFile(oldSheetId); // Move the old file to the trash
               });
             });
@@ -232,7 +226,6 @@ function trashFile(fileId) {
 * @param {string|number} days Amount of days abscence
 * @param {string|number} preset_hours Amount of hours abscence
 */
-let days, hours;
 function updateSheet(days, hours) {
   q('pre').innerHTML = "";
   q('#update').style.display = "none";
@@ -261,7 +254,7 @@ function updateSheet(days, hours) {
 
 /**
  * Show the update form
- * @param  {object} event Click event object
+ * @param {object} event Click event object
  */
 function showUpdateForm(event) {
   if (event) event.preventDefault();
@@ -270,15 +263,12 @@ function showUpdateForm(event) {
 }
 
 /**
- * Handle form actions
+ * Handle form submission
  */
 document.addEventListener("DOMContentLoaded", function() { 
-  let form = q("form");
-
-  form.addEventListener("submit", (event)=>{
+  q("form").addEventListener("submit", (event)=>{
     event.preventDefault();
-    console.log(event);
-    updateSheet(form[0].value, form[1].value, true);
+    updateSheet(q("form")[0].value, q("form")[1].value, true);
   });
 });
 
