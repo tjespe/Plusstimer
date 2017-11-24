@@ -1,13 +1,9 @@
-// Hide console if requested in URL
-if (location.hash.indexOf('hidepre') > -1) setTimeout(()=>{
-  document.querySelector("pre").style.display = "none";
-}, 100);
-
 let CLIENT_ID = '1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleusercontent.com'; // Client ID from https://console.developers.google.com
-let SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"];
+let SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]; // The nexessary API scopes
 let spreadsheetId; // ID of the spreadsheet on the user's Drive
 
 let q = (s)=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
+
 let version = { // Info regarding the current version of the spreadsheet
   key: "Plusstimer 2017 høst Ulv Rotte", // A unique identifier for the document
   title: "Plusstimer høst 2017 Oppdatert", // The name the spreadsheet will get in the user's Drive
@@ -263,7 +259,7 @@ function showUpdateForm(event) {
 }
 
 /**
- * Handle form submission
+ * Handle update form submission
  */
 document.addEventListener("DOMContentLoaded", function() { 
   q("form").addEventListener("submit", (event)=>{
@@ -274,7 +270,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 /**
 * Append text to the pre element containing the given message.
-*
 * @param {string} message Text to be placed in pre element.
 */
 function appendPre(message) {
