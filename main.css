@@ -33,6 +33,7 @@ input, pre {
   max-width: calc(210px + 64px);
   width: calc(62vw + 64px);
   background: #fff;
+  -webkit-appearance: none;
 }
 input[type="submit"] {
   max-width: calc(210px + 76px);
