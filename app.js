@@ -2,7 +2,7 @@ let CLIENT_ID = "1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleuserc
 let SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]; // The nexessary API scopes
 let spreadsheetId; // ID of the spreadsheet on the user's Drive
 
-let q = (s)=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
+let q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
 let version = { // Info regarding the current version of the spreadsheet
   key: "Plusstimer 2017 høst Ulv Rotte", // A unique identifier for the document
@@ -67,7 +67,7 @@ function findFile() {
   appendPre("Finner regnearket…");
   gapi.client.drive.files.list({
     "q": "fullText contains '"+version.key+"'"
-  }).execute((resp)=>{
+  }).execute(resp=>{
     if (!resp.error) {
       spreadsheetId = getID(resp.items);
       if (spreadsheetId) loadSheetsApi(fetchAndOutputData);
@@ -125,7 +125,7 @@ function fetchAndOutputData() {
     gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
       spreadsheetId: spreadsheetId,
       range: version.range
-    }).then((response)=>{  // Handle successful response
+    }).then(response=>{  // Handle successful response
       appendPre("Lasting fullført.");
       let range = response.result;
       if (range.values.length > 0) { // Validate response and print result
@@ -142,7 +142,7 @@ function fetchAndOutputData() {
         appendPre("Fant ingen data.");
       }
       if (firstVisit) showUpdateForm();
-    }, (response)=>{ // Handle erroneous response
+    }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message);
     });
   } else {  // Handle unsuccessful validation of the spreadsheetId variable (this should never happen, but the user should get an explanation if it does)
@@ -160,7 +160,7 @@ function copyFile() {
   gapi.client.drive.files.copy({
     "fileId": version.template,
     "resource": {"title": version.title}
-  }).execute((resp)=>{
+  }).execute(resp=>{
     spreadsheetId = resp.id;
     loadSheetsApi(fetchAndOutputData);
     firstVisit = true;
@@ -174,7 +174,7 @@ function copyDataFromOldSheet () {
   appendPre("Prøver å finne et gammelt regneark…");
   gapi.client.drive.files.list({ // Query user's Drive
     "q": "fullText contains '"+compatible_versions[0].key+"'"
-  }).execute((resp)=>{ // Handle response
+  }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       let items = resp.items;
       for (let i = 0; i < items.length; i++) {
@@ -185,14 +185,12 @@ function copyDataFromOldSheet () {
             gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
               spreadsheetId: oldSheetId,
               range: compatible_versions[0].days,
-            }).then((response)=>{
-              let days = response.result.values[0][0]; // Save response
+            }).then(days_response=>{
               gapi.client.sheets.spreadsheets.values.get({ // Get amount of hours abscence
                 spreadsheetId: oldSheetId,
                 range: compatible_versions[0].hours,
-              }).then((response)=>{
-                let hours = response.result.values[0][0]; // Save response
-                updateSheet(days, hours); // Update the new sheet with the variables from the old sheet
+              }).then(hours_response=>{
+                updateSheet(days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
                 trashFile(oldSheetId); // Move the old file to the trash
               });
             });
@@ -238,7 +236,7 @@ function updateSheet(days, hours) {
       range: version.range,
       valueInputOption: "USER_ENTERED",
       values: values
-    }).then((resp)=>{
+    }).then(resp=>{
       appendPre("Fravær er oppdatert, laster inn plusstimer på nytt…");
       fetchAndOutputData();
     });
@@ -261,7 +259,7 @@ function showUpdateForm(event) {
  * Handle update form submission
  */
 document.addEventListener("DOMContentLoaded", ()=>{
-  q("form").addEventListener("submit", (event)=>{
+  q("form").addEventListener("submit", event=>{
     event.preventDefault();
     updateSheet(q("form")[0].value, q("form")[1].value, true);
   });
