@@ -32,6 +32,22 @@ input, pre {
   box-shadow: 0 1px 2px #ccc;
   max-width: calc(210px + 64px);
   width: calc(62vw + 64px);
+  background: #fff;
+}
+input[type="submit"] {
+  max-width: calc(210px + 76px);
+  width: calc(62vw + 76px);
+}
+form:valid>input[type="submit"] {
+  cursor: pointer;
+}
+form:valid>input[type="submit"]:active {
+  background: #ccc;
+}
+form:invalid>input[type="submit"], input:invalid {
+  color: #a94442;
+  background: #f2dede;
+  border-color: #a94442;
 }
 pre {
   line-height: 1.5;
@@ -69,6 +85,7 @@ form#update {
   max-width: calc(210px + 74px);
   width: calc(62vw + 74px);
   display: none;
+  margin: auto;
 }
 #authorize-div {
   display: none;

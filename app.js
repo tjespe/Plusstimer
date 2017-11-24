@@ -147,10 +147,12 @@ function fetchAndOutputData() {
         q('#result-wrapper').style.display = 'flex';
         q('#caption>a').innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
         q('#output').style.display = 'none';
+        q("form")[0].value = days;
+        q("form")[1].value = hours;
       } else { // Handle unsuccessful validation of response
         appendPre('Fant ingen data.');
       }
-      if (firstVisit) updateSheet();
+      if (firstVisit) showUpdateForm();
     }, function(response) { // Handle erroneous response
       appendPre('Feil: ' + response.result.error.message);
     });
@@ -227,17 +229,14 @@ function trashFile(fileId) {
 /*
 * Update spreadsheet
 *
-* @param {string|number|undefined} preset_days Prompt can be skipped if this parameter is defined
-* @param {string|number|undefined} preset_hours Prompt can be skipped if this parameter is defined
-* @param {any} skip_conf Confirmation will be skipped if this parameter is truthy
+* @param {string|number} days Amount of days abscence
+* @param {string|number} preset_hours Amount of hours abscence
 */
 let days, hours;
-function updateSheet(preset_days, preset_hours, skip_conf) {
-  q('pre').innerHTML = ""
-  days = preset_days || prompt('Hvor mange hele DAGER fravær har du på skolearena?\nf.eks. 2', days);
-  hours = preset_hours || prompt('Hvor mange TIMER fravær har du på skolearena?\nf.eks. 23,75\nNB: Hvis du har gjort frivillig arbeid som f.eks. Åpen Dag-guide kan du trekke det fra her.', hours);
-  confirmed = skip_conf || confirm("Er dette riktig informasjon?:\nDager: "+days+"\nTimer: "+hours);
-  if (days && hours && confirmed) {
+function updateSheet(days, hours) {
+  q('pre').innerHTML = "";
+  q('#update').style.display = "none";
+  if (days && hours) {
     q('#output').style.display = 'block';
     firstVisit = false;
     values = [];
@@ -255,10 +254,33 @@ function updateSheet(preset_days, preset_hours, skip_conf) {
       appendPre('Fravær er oppdatert, laster inn plusstimer på nytt…');
       fetchAndOutputData();
     })
-  } else if (days && hours && !confirmed) {
-    updateSheet(days, hours, skip_conf);
+  } else {
+    showUpdateForm();
   }
 }
+
+/**
+ * Show the update form
+ * @param  {object} event Click event object
+ */
+function showUpdateForm(event) {
+  if (event) event.preventDefault();
+  q('#update').style.display = "block";
+  q('#result-wrapper').style.display = "none";
+}
+
+/**
+ * Handle form actions
+ */
+document.addEventListener("DOMContentLoaded", function() { 
+  let form = q("form");
+
+  form.addEventListener("submit", (event)=>{
+    event.preventDefault();
+    console.log(event);
+    updateSheet(form[0].value, form[1].value, true);
+  });
+});
 
 /**
 * Append text to the pre element containing the given message.
