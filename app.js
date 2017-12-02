@@ -266,6 +266,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
     event.preventDefault();
     updateSheet(q("form")[0].value, q("form")[1].value, q("form")[2].value);
   });
+  q("#back").addEventListener("click", event=>{
+    q("form").style.display = "none";
+    q("#result-wrapper").style.display = "flex";
+  })
 });
 
 /**

@@ -23,7 +23,7 @@ a {
   color: #337ab7;
   font-size: small;
 }
-input, pre, info {
+input, pre, info, .button {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: inherit;
@@ -33,11 +33,12 @@ input, pre, info {
   max-width: calc(210px + 64px);
   width: calc(62vw + 64px);
   background: #fff;
+  color: inherit;
   -webkit-appearance: none;
 }
 info {
   position: absolute;
-  margin: 0px 0 0 0;
+  margin: 0 0 0 -142.5px;
   font-weight: 100;
   font-style: oblique;
   z-index: -100;
@@ -60,10 +61,10 @@ input[type="submit"] {
   max-width: calc(210px + 76px);
   width: calc(62vw + 76px);
 }
-form:valid>input[type="submit"] {
+form:valid>input[type="submit"], .button {
   cursor: pointer;
 }
-form:valid>input[type="submit"]:active {
+form:valid>input[type="submit"]:active, .button:active {
   background: #ccc;
 }
 form:invalid>input[type="submit"], input:invalid {
@@ -79,6 +80,16 @@ pre {
   padding-top: 0;
   padding-bottom: 35px;
   margin: auto;
+}
+menu {
+  display: flex;
+  padding: 0;
+}
+menu > * {
+  margin-right: 5px;
+}
+menu > *:last-child {
+  margin-right: 0;
 }
 
 #result-wrapper {
