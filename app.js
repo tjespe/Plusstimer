@@ -11,6 +11,7 @@ let version = { // Info regarding the current version of the spreadsheet
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
   days: [0,0], // The vertical and horizontal position of days in the range, respectively
   hours: [0,1], // The vertical and horizontal position of hours in the range, respectively
+  extra: [0,2], // The vertical and horizontal position of extra hours in the range, respectively
   plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
 };
 let firstVisit = false; // Whether or not the user has visited this page earlier
@@ -138,6 +139,7 @@ function fetchAndOutputData() {
         q("pre").style.display = "none";
         q("form")[0].value = days;
         q("form")[1].value = hours;
+        q("form")[2].value = range.values[version.extra[0]][version.extra[1]];
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.");
       }
@@ -216,8 +218,9 @@ function trashFile(fileId) {
 *
 * @param {string|number} days Amount of days abscence
 * @param {string|number} preset_hours Amount of hours abscence
+* @param {string|number} extra Extra school hours worked
 */
-function updateSheet(days, hours) {
+function updateSheet(days, hours, extra) {
   q("pre").innerHTML = "";
   q("form").style.display = "none";
   if (days && hours) {
@@ -226,8 +229,10 @@ function updateSheet(days, hours) {
     values = [];
     values[version.days[0]] = [];
     values[version.hours[0]] = [];
+    values[version.extra[0]] = [];
     values[version.days[0]][version.days[1]] = days;
     values[version.hours[0]][version.hours[1]] = hours;
+    values[version.extra[0]][version.extra[1]] = extra;
     appendPre("Oppdaterer fravær…");
     gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId: spreadsheetId,
@@ -259,7 +264,7 @@ function showUpdateForm(event) {
 document.addEventListener("DOMContentLoaded", ()=>{
   q("form").addEventListener("submit", event=>{
     event.preventDefault();
-    updateSheet(q("form")[0].value, q("form")[1].value, true);
+    updateSheet(q("form")[0].value, q("form")[1].value, q("form")[2].value);
   });
 });
 
