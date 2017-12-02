@@ -23,7 +23,7 @@ a {
   color: #337ab7;
   font-size: small;
 }
-input, pre {
+input, pre, info {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: inherit;
@@ -34,6 +34,27 @@ input, pre {
   width: calc(62vw + 64px);
   background: #fff;
   -webkit-appearance: none;
+}
+info {
+  position: absolute;
+  margin: 0px 0 0 0;
+  font-weight: 100;
+  font-style: oblique;
+  z-index: -100;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+info::before {
+  content: " ";
+  background: #ccc;
+  height: 24px;
+  width: 2px;
+  margin: -29px 0 0 0;
+  position: absolute;
+}
+input:focus + info {
+  z-index: 1000;
+  opacity: 1;
 }
 input[type="submit"] {
   max-width: calc(210px + 76px);
