@@ -38,7 +38,7 @@ input, pre, info, .button {
 }
 info {
   position: absolute;
-  margin: 0 0 0 -142.5px;
+  margin: 22px 0 0 -142.5px;
   font-weight: 100;
   font-style: oblique;
   z-index: -100;
