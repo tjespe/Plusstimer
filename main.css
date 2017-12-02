@@ -46,24 +46,37 @@ info {
   transition: opacity 0.15s;
   background: aliceblue;
 }
-info::before {
+info:before {
   content: " ";
   background: #ccc;
   height: 24px;
   width: 2px;
-  margin: -29px 0 0 0;
+  top: -24px;
   position: absolute;
+}
+@media screen and (min-width: 930px) {
+  info {
+    margin: -32px 0 0 160px;
+  }
+  info:before {
+    width: 16px;
+    height: 2px;
+    left: -17px;
+    top: initial;
+  }
+}
+@media screen and (max-width: 929px) {
+  info + * {
+    opacity: 1;
+    transition: opacity 0.15s;
+  }
+  input:focus + info + * {
+    opacity: 0;
+  }
 }
 input:focus + info {
   z-index: 1000;
   opacity: 1;
-}
-info + * {
-  opacity: 1;
-  transition: opacity 0.15s;
-}
-input:focus + info + * {
-  opacity: 0;
 }
 input[type="submit"] {
   max-width: calc(210px + 76px);
