@@ -57,6 +57,13 @@ input:focus + info {
   z-index: 1000;
   opacity: 1;
 }
+info + * {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+input:focus + info + * {
+  opacity: 0;
+}
 input[type="submit"] {
   max-width: calc(210px + 76px);
   width: calc(62vw + 76px);
