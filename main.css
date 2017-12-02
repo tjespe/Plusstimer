@@ -43,7 +43,7 @@ info {
   font-style: oblique;
   z-index: -100;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   background: aliceblue;
 }
 info::before {
@@ -60,7 +60,7 @@ input:focus + info {
 }
 info + * {
   opacity: 1;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
 }
 input:focus + info + * {
   opacity: 0;
