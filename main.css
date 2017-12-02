@@ -44,6 +44,7 @@ info {
   z-index: -100;
   opacity: 0;
   transition: opacity 0.3s;
+  background: aliceblue;
 }
 info::before {
   content: " ";
