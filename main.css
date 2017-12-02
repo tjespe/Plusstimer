@@ -134,6 +134,7 @@ menu > *:last-child {
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 2em;
+  box-shadow: 0 2px 14px #aaa;
 }
 form#update {
   max-width: calc(210px + 74px);
