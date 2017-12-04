@@ -67,7 +67,6 @@ info:before {
 }
 @media screen and (max-width: 929px) {
   info + *, info + * + *, info + * + * + *, info + * + * + * + * {
-    opacity: 1;
     transition: opacity 0.15s;
   }
   input:focus + info + *, input:focus + info + * + *, input:focus + info + * + * + *, input:focus + info + * + * + * + * {
