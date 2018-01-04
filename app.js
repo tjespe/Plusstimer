@@ -5,7 +5,7 @@ let spreadsheetId; // ID of the spreadsheet on the user's Drive
 let q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
 let version = { // Info regarding the current version of the spreadsheet
-  key: "Plusstimer 2017 høst Ulv Rotte", // A unique identifier for the document
+  key: "Plusstimer 2017 høst Bjørn Gaupe", // A unique identifier for the document
   title: "Plusstimer høst 2017 Oppdatert", // The name the spreadsheet will get in the user's Drive
   template: "17x1xBTLtThJMk7qrQpReAbczYQDCceHD1eTgh3Vmi84", // The drive id for the template
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
@@ -23,6 +23,11 @@ let compatible_versions = [{
   key: "Plusstimer 2017 høst Panda Bever",    // A string of random words only found in that spreadsheet
   days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
   hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
+}, 
+{
+  key: "Plusstimer 2017 høst Ulv Rotte",
+  days: "Plusstimer!D7",
+  hours: "Plusstimer!E7"
 }];
 
 /**
