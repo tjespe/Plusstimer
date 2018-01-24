@@ -5,9 +5,9 @@ let spreadsheetId; // ID of the spreadsheet on the user's Drive
 let q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
 let version = { // Info regarding the current version of the spreadsheet
-  key: "Plusstimer 2017 høst Bjørn Gaupe", // A unique identifier for the document
-  title: "Plusstimer høst 2017 Oppdatert", // The name the spreadsheet will get in the user's Drive
-  template: "17x1xBTLtThJMk7qrQpReAbczYQDCceHD1eTgh3Vmi84", // The drive id for the template
+  key: "Plusstimer 2018 vår gfxksll", // A unique identifier for the document
+  title: "(Uoffisiell) Plusstimer vår 2018", // The name the spreadsheet will get in the user's Drive
+  template: "1c_BJ8-Uhf4uYZesw1QdSOibjel-bpaA7sHY6PCPk1xo", // The drive id for the template
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
   days: [0,0], // The vertical and horizontal position of days in the range, respectively
   hours: [0,1], // The vertical and horizontal position of hours in the range, respectively
@@ -17,18 +17,21 @@ let version = { // Info regarding the current version of the spreadsheet
 let firstVisit = false; // Whether or not the user has visited this page earlier
 
 /**
-* The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them
+* The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
+* Currently only one element is supported in this array but that will be fixed in the future.
 */
-let compatible_versions = [{
-  key: "Plusstimer 2017 høst Panda Bever",    // A string of random words only found in that spreadsheet
-  days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
-  hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
-}, 
-{
-  key: "Plusstimer 2017 høst Ulv Rotte",
-  days: "Plusstimer!D7",
-  hours: "Plusstimer!E7"
-}];
+/*
+ *let compatible_versions = [{
+ *  key: "Plusstimer 2017 høst Panda Bever",    // A string of random words only found in that spreadsheet
+ *  days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
+ *  hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
+ *}];
+ */
+
+/**
+ * The point of this array is to delete old and outdated spreadsheets created by this web app
+ */
+let incompatible_versions = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
 
 /**
 * Handle response from authorization server.
@@ -75,6 +78,7 @@ function findFile() {
     "q": "fullText contains '"+version.key+"'"
   }).execute(resp=>{
     if (!resp.error) {
+      trashIncompatibles();
       spreadsheetId = getID(resp.items);
       if (spreadsheetId) loadSheetsApi(fetchAndOutputData);
     } else if (resp.error.code == 401) {
@@ -161,16 +165,15 @@ function fetchAndOutputData() {
 * Copy a spreadsheet file because no existing file was found
 */
 function copyFile() {
-  if (compatible_versions.length) { // Check if any older, but compatible, versions of the current spreadsheet exists
+  if (typeof compatible_versions !== "undefined" && compatible_versions.length) { // Check if any older, but compatible, versions of the current spreadsheet exists
     copyDataFromOldSheet();
-  }
+  } else firstVisit = true;
   gapi.client.drive.files.copy({
     "fileId": version.template,
     "resource": {"title": version.title}
   }).execute(resp=>{
     spreadsheetId = resp.id;
     loadSheetsApi(fetchAndOutputData);
-    firstVisit = true;
   });
 }
 
@@ -187,6 +190,7 @@ function copyDataFromOldSheet () {
       for (let i = 0; i < items.length; i++) {
         if (items[i].mimeType == "application/vnd.google-apps.spreadsheet" && !items[i].labels.trashed) {
           appendPre("Fant et gammelt regneark");
+          firstVisit = false;
           let oldSheetId = items[i].id;
           loadSheetsApi(()=>{ // Load sheets api
             gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
@@ -202,7 +206,7 @@ function copyDataFromOldSheet () {
               });
             });
           });
-        }
+        } else firstVisit = true;
       }
     }
   });
@@ -216,6 +220,24 @@ function copyDataFromOldSheet () {
 function trashFile(fileId) {
   appendPre("Flytter gammelt regneark til papirkurven…");
   gapi.client.drive.files.trash({"fileId": fileId});
+}
+
+/**
+ * Move all outdated files to trash
+ * @return {[type]} [description]
+ */
+function trashIncompatibles() {
+  appendPre("Prøver å kaste gamle filer");
+  for (let i = 0;i < incompatible_versions.length;i++) {
+    gapi.client.drive.files.list({ // Query user's Drive
+      "q": "fullText contains '"+incompatible_versions[i]+"'"
+    }).execute(resp=>{
+      appendPre("Gjorde et søk etter gamle filer og fikk "+resp.items.length+" treff")
+      for (let j = 0; j < resp.items.length; j++) {
+        if (resp.items[j].mimeType == "application/vnd.google-apps.spreadsheet" && !resp.items[j].labels.trashed) trashFile(resp.items[j].id);
+      }
+    });
+  }
 }
 
 /*
