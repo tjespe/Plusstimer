@@ -227,12 +227,10 @@ function trashFile(fileId) {
  * @return {[type]} [description]
  */
 function trashIncompatibles() {
-  appendPre("Prøver å kaste gamle filer");
   for (let i = 0;i < incompatible_versions.length;i++) {
     gapi.client.drive.files.list({ // Query user's Drive
       "q": "fullText contains '"+incompatible_versions[i]+"'"
     }).execute(resp=>{
-      appendPre("Gjorde et søk etter gamle filer og fikk "+resp.items.length+" treff")
       for (let j = 0; j < resp.items.length; j++) {
         if (resp.items[j].mimeType == "application/vnd.google-apps.spreadsheet" && !resp.items[j].labels.trashed) trashFile(resp.items[j].id);
       }
