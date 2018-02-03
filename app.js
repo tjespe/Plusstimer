@@ -47,22 +47,22 @@ function checkAuth() {
 }
 
 /**
+* Initiate auth flow in response to user clicking authorize button.
+*/
+function handleAuthClick() {
+  gapi.auth.authorize(
+    {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+    handleAuthResult
+  );
+  appendPre("Autoriserer…");
+}
+
+/**
 * Hide loading text
 */
 function hideLoading() {
   apiLoadSuccess = true;
   document.querySelector("#loading").remove();
-}
-
-/**
-* Handle API load error
-*/
-function apiLoadErr() {
-  if (!apiLoadSuccess) {
-    errorMessageShown = true;
-    hideLoading();
-    appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet");  
-  }
 }
 
 /**
@@ -86,14 +86,14 @@ function handleAuthResult(authResult) {
 }
 
 /**
-* Initiate auth flow in response to user clicking authorize button.
+* Handle API load error
 */
-function handleAuthClick() {
-  gapi.auth.authorize(
-    {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-    handleAuthResult
-  );
-  appendPre("Autoriserer…");
+function apiLoadErr() {
+  if (!apiLoadSuccess) {
+    errorMessageShown = true;
+    hideLoading();
+    appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet");  
+  }
 }
 
 /**
