@@ -71,7 +71,6 @@ function apiLoadErr() {
 * @param {Object} authResult Authorization result.
 */
 function handleAuthResult(authResult) {
-  hideLoading();
   if (errorMessageShown) appendPre("Prank, det funka");
   let authDiv = document.getElementById("authorize-div");
   if (authResult && !authResult.error) {
@@ -176,10 +175,13 @@ function fetchAndOutputData() {
         appendPre("Fant ingen data.");
       }
       if (firstVisit) showUpdateForm();
+      hideLoading();
     }, response=>{ // Handle erroneous response
+      hideLoading();
       appendPre("Feil: " + response.result.error.message);
     });
   } else {  // Handle unsuccessful validation of the spreadsheetId variable (this should never happen, but the user should get an explanation if it does)
+    hideLoading();
     appendPre("Something went wrong, refresh the page and try again");
   }
 }
