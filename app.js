@@ -15,6 +15,7 @@ let version = { // Info regarding the current version of the spreadsheet
   plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
 };
 let firstVisit = false; // Whether or not the user has visited this page earlier
+let apiLoadSuccess = false, errorMessageShown = false;
 
 /**
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
@@ -34,11 +35,44 @@ let firstVisit = false; // Whether or not the user has visited this page earlier
 let incompatible_versions = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
 
 /**
+* Check if current user has authorized this application.
+*/
+function checkAuth() {
+  gapi.auth.authorize({
+    "client_id": CLIENT_ID,
+    "scope": SCOPES.join(" "),
+    "immediate": true
+  }, handleAuthResult);
+  setTimeout(apiLoadErr, 3000);
+}
+
+/**
+* Hide loading text
+*/
+function hideLoading() {
+  apiLoadSuccess = true;
+  document.querySelector("#loading").remove();
+}
+
+/**
+* Handle API load error
+*/
+function apiLoadErr() {
+  if (!apiLoadSuccess) {
+    errorMessageShown = true;
+    hideLoading();
+    appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet");  
+  }
+}
+
+/**
 * Handle response from authorization server.
 *
 * @param {Object} authResult Authorization result.
 */
 function handleAuthResult(authResult) {
+  hideLoading();
+  if (errorMessageShown) appendPre("Prank, det funka");
   let authDiv = document.getElementById("authorize-div");
   if (authResult && !authResult.error) {
     // Hide auth UI, then load client library.
@@ -88,17 +122,6 @@ function findFile() {
       appendPre("En feil oppsto: " + resp.error.message);
     }
   });
-}
-
-/**
-* Check if current user has authorized this application.
-*/
-function checkAuth() {
-  gapi.auth.authorize({
-    "client_id": CLIENT_ID,
-    "scope": SCOPES.join(" "),
-    "immediate": true
-  }, handleAuthResult);
 }
 
 /**
