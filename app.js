@@ -73,6 +73,7 @@ function apiLoadErr() {
 function handleAuthResult(authResult) {
   hideLoading();
   if (errorMessageShown) appendPre("Prank, det funka");
+  appendPre(`<img src="img/loading.svg" style="animation: spin 4s infinite">`)
   let authDiv = document.getElementById("authorize-div");
   if (authResult && !authResult.error) {
     // Hide auth UI, then load client library.
