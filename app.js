@@ -62,7 +62,7 @@ function handleAuthClick() {
 */
 function hideLoading() {
   apiLoadSuccess = true;
-  document.querySelector("#loading").remove();
+  if (el = document.querySelector("#loading")) el.remove();
 }
 
 /**
