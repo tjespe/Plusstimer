@@ -21,7 +21,6 @@ h4, h6 {
 }
 a {
   color: #337ab7;
-  font-size: small;
 }
 input, pre, info, .button {
   border-radius: 5px;
@@ -118,10 +117,12 @@ menu > *:last-child {
   justify-content: center;
   display: none;
 }
-#caption {
-  color: #aaa;
+.caption {
   width: 62vw;
-  max-width:210px;
+  max-width:274px;
+}
+#caption a {
+  font-size: small;
 }
 #result {
   width: 62vw;

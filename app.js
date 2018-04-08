@@ -170,6 +170,7 @@ function fetchAndOutputData() {
         q("form")[0].value = days;
         q("form")[1].value = hours;
         q("form")[2].value = range.values[version.extra[0]][version.extra[1]];
+        q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+spreadsheetId;
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.");
       }
