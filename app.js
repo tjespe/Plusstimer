@@ -208,6 +208,7 @@ function copyDataFromOldSheet () {
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       let items = resp.items;
+      firstVisit = true;
       for (let i = 0; i < items.length; i++) {
         if (items[i].mimeType == "application/vnd.google-apps.spreadsheet" && !items[i].labels.trashed) {
           appendPre("Fant et gammelt regneark");
@@ -227,7 +228,7 @@ function copyDataFromOldSheet () {
               });
             });
           });
-        } else firstVisit = true;
+        }
       }
     }
   });
