@@ -143,6 +143,7 @@ form#update {
 #authorize-div {
   display: none;
   margin-top: 30px;
+  margin-bottom: -50px;
 }
 
 .number {

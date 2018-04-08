@@ -13,13 +13,12 @@ const version = { // Info regarding the current version of the spreadsheet
   extra: [0,2], // The vertical and horizontal position of extra hours in the range, respectively
   plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
 };
-let apiLoadSuccess = false, errorMessageShown = false;
 
 /**
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Currently only one element is supported in this array but that will be fixed in the future.
 */
-let compatible_versions = [{
+const compatible_versions = [{
   key: "Plusstimer 2018 vår gfxksll",         // A string of random words only found in that spreadsheet
   days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
   hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
@@ -28,29 +27,28 @@ let compatible_versions = [{
 /**
  * The point of this array is to delete old and outdated spreadsheets created by this web app
  */
-let incompatible_versions = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
+const incompatible_versions = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
 
 /**
 * Check if current user has authorized this application.
 */
 function checkAuth() {
+  let timeout = setTimeout(apiLoadErr, 3000);
   gapi.auth.authorize({
     "client_id": CLIENT_ID,
     "scope": SCOPES.join(" "),
     "immediate": true
-  }, handleAuthResult);
-  setTimeout(apiLoadErr, 3000);
+  }, result=>(handleAuthResult(result), clearTimeout(timeout)));
 }
 
 /**
 * Initiate auth flow in response to user clicking authorize button.
 */
-function handleAuthClick(response) {
-  console.log("Handling auth response", response)
-  if (response.error) apiLoadErr();
+function handleAuthClick() {
+  q("#authorize-div").style.display = "none"; // Hide auth UI
   gapi.auth.authorize(
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-    handleAuthResult
+    result=>handleAuthResult({...result, hideAuth: true})
   );
   appendPre("Autoriserer…");
 }
@@ -59,7 +57,6 @@ function handleAuthClick(response) {
 * Hide loading text
 */
 function hideLoading() {
-  apiLoadSuccess = true;
   if (el = document.querySelector("#loading")) el.remove();
 }
 
@@ -70,13 +67,11 @@ function hideLoading() {
 */
 function handleAuthResult(authResult) {
   hideLoading();
-  if (errorMessageShown) appendPre("Prank, det funka");
-  let authDiv = document.getElementById("authorize-div");
   if (authResult && !authResult.error) {
-    authDiv.style.display = "none"; // Hide auth UI
+    q("#authorize-div").style.display = "none"; // Hide auth UI
     loadGDriveApi(); // Load client library
-  } else {
-    authDiv.style.display = "block"; // Show auth UI, allowing the user to initiate authorization by clicking a button.
+  } else if (!authResult.hasOwnProperty("hideAuth")) {
+    q("#authorize-div").style.display = "block"; // Show auth UI, allowing the user to initiate authorization by clicking a button.
   }
 }
 
@@ -84,11 +79,9 @@ function handleAuthResult(authResult) {
 * Handle API load error
 */
 function apiLoadErr() {
-  if (!apiLoadSuccess) {
-    errorMessageShown = true;
-    hideLoading();
-    appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet");  
-  }
+  hideLoading();
+  document.querySelectorAll("pre h4").forEach(node=>node.remove());
+  appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet.");
 }
 
 /**
@@ -115,8 +108,7 @@ function findFile() {
         setEventListeners(sheetId);
       }
     } else if (resp.error.code == 401) {
-      // Access token might have expired.
-      checkAuth();
+      checkAuth(); // Access token might have expired.
     } else {
       appendPre("En feil oppsto: " + resp.error.message);
     }
