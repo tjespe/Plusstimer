@@ -120,8 +120,6 @@ menu > *:last-child {
 .caption {
   width: 62vw;
   max-width:274px;
-}
-#caption a {
   font-size: small;
 }
 #result {

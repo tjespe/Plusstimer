@@ -22,12 +22,12 @@
 </head>
 <body>
   <div id="result-wrapper">
-    <div class="caption warning">NB! Hvis du ikke går i andreklasse må du endre på <a id="doc-link">denne tabellen</a></div>
+    <div class="caption warning">NB! Hvis du ikke går i andreklasse må du endre på <a id="doc-link" target="_blank">denne tabellen</a></div>
     <div id="result">
       <div class="number"></div>
       <description>plusstimer</description>
     </div>
-    <div id="caption" class="caption"><a href onclick="showUpdateForm(event)">Klikk her for å oppdatere fravær</a></div>
+    <div id="caption" class="caption"><a href onclick="showUpdateForm(false, event)">Klikk her for å oppdatere fravær</a></div>
   </div>
   <form id="update">
     <h4>Hvor mange dager fravær har du på skolearena?</h4>
@@ -40,7 +40,7 @@
     <input type="text" name="extra">
     <info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info>
     <menu style="margin-top: 20px">
-      <a id="back" class="button" style="flex:1"><</a>
+      <a id="back" class="button" style="flex:1" onclick="showUpdateForm(true, event)"><</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>

@@ -1,10 +1,9 @@
-let CLIENT_ID = "1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleusercontent.com"; // Client ID from https://console.developers.google.com
-let SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]; // The nexessary API scopes
-let spreadsheetId; // ID of the spreadsheet on the user's Drive
+const CLIENT_ID = "1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleusercontent.com"; // Client ID from https://console.developers.google.com
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]; // The nexessary API scopes
 
-let q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
+const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
-let version = { // Info regarding the current version of the spreadsheet
+const version = { // Info regarding the current version of the spreadsheet
   key: "Versjon ll20s0gc", // A unique identifier for the document
   title: "Plusstimer vår 2018", // The name the spreadsheet will get in the user's Drive
   template: "18JNjXO_RUPuH4414LOKF0vzgqLVQomnF_LmXMjtKc2A", // The drive id for the template
@@ -14,7 +13,6 @@ let version = { // Info regarding the current version of the spreadsheet
   extra: [0,2], // The vertical and horizontal position of extra hours in the range, respectively
   plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
 };
-let firstVisit = false; // Whether or not the user has visited this page earlier
 let apiLoadSuccess = false, errorMessageShown = false;
 
 /**
@@ -47,7 +45,9 @@ function checkAuth() {
 /**
 * Initiate auth flow in response to user clicking authorize button.
 */
-function handleAuthClick() {
+function handleAuthClick(response) {
+  console.log("Handling auth response", response)
+  if (response.error) apiLoadErr();
   gapi.auth.authorize(
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
     handleAuthResult
@@ -73,12 +73,10 @@ function handleAuthResult(authResult) {
   if (errorMessageShown) appendPre("Prank, det funka");
   let authDiv = document.getElementById("authorize-div");
   if (authResult && !authResult.error) {
-    // Hide auth UI, then load client library.
-    authDiv.style.display = "none";
-    loadGDriveApi();
+    authDiv.style.display = "none"; // Hide auth UI
+    loadGDriveApi(); // Load client library
   } else {
-    // Show auth UI, allowing the user to initiate authorization by clicking a button.
-    authDiv.style.display = "block";
+    authDiv.style.display = "block"; // Show auth UI, allowing the user to initiate authorization by clicking a button.
   }
 }
 
@@ -111,8 +109,11 @@ function findFile() {
   }).execute(resp=>{
     if (!resp.error) {
       trashIncompatibles();
-      spreadsheetId = getID(resp.items);
-      if (spreadsheetId) loadSheetsApi(fetchAndOutputData);
+      sheetId = getID(resp.items);
+      if (sheetId) {
+        loadSheetsApi(fetchAndOutputData, sheetId, false);
+        setEventListeners(sheetId);
+      }
     } else if (resp.error.code == 401) {
       // Access token might have expired.
       checkAuth();
@@ -142,19 +143,21 @@ function getID(items) {
 *
 * @param {function()} callback Function to execute after loading API.
 */
-function loadSheetsApi(callback) {
+function loadSheetsApi(callback, ...args) {
   appendPre("Laster inn flere viktige filer…");
-  gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(callback);
+  gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response=>{
+    args.length ? callback(...args) : callback(response);
+  });
 }
 
 /**
 * Fetch and print the data
 */
-function fetchAndOutputData() {
+function fetchAndOutputData(sheetId, autoShowForm) {
   appendPre("Laster inn plusstimer…");
-  if (typeof spreadsheetId === "string" && spreadsheetId.length > 5) { // Validate the spreadsheetId variable
+  if (typeof sheetId === "string") { // Validate the sheetId parameter
     gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
-      spreadsheetId: spreadsheetId,
+      spreadsheetId: sheetId,
       range: version.range
     }).then(response=>{  // Handle successful response
       appendPre("Lasting fullført.");
@@ -170,11 +173,11 @@ function fetchAndOutputData() {
         q("form")[0].value = days;
         q("form")[1].value = hours;
         q("form")[2].value = range.values[version.extra[0]][version.extra[1]];
-        q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+spreadsheetId;
+        q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.");
       }
-      if (firstVisit) showUpdateForm();
+      if (autoShowForm) showUpdateForm();
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message);
     });
@@ -187,33 +190,30 @@ function fetchAndOutputData() {
 * Copy a spreadsheet file because no existing file was found
 */
 function copyFile() {
-  if (typeof compatible_versions !== "undefined" && compatible_versions.length) { // Check if any older, but compatible, versions of the current spreadsheet exists
-    copyDataFromOldSheet();
-  } else firstVisit = true;
   gapi.client.drive.files.copy({
     "fileId": version.template,
     "resource": {"title": version.title}
   }).execute(resp=>{
-    spreadsheetId = resp.id;
-    loadSheetsApi(fetchAndOutputData);
+    if (compatible_versions.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
+    loadSheetsApi(()=>fetchAndOutputData(resp.id, compatible_versions.length > 0));
+    setEventListeners(resp.id);
   });
 }
 
 /**
 * Get data from old compatible spreadsheet and insert it into the new one
 */
-function copyDataFromOldSheet () {
+function copyDataFromOldSheet (newSheetId) {
+  console.log("Trying to copy data from old sheet to",newSheetId)
   appendPre("Prøver å finne et gammelt regneark…");
   gapi.client.drive.files.list({ // Query user's Drive
     "q": "fullText contains '"+compatible_versions[0].key+"'"
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       let items = resp.items;
-      firstVisit = true;
       for (let i = 0; i < items.length; i++) {
         if (items[i].mimeType == "application/vnd.google-apps.spreadsheet" && !items[i].labels.trashed) {
           appendPre("Fant et gammelt regneark");
-          firstVisit = false;
           let oldSheetId = items[i].id;
           loadSheetsApi(()=>{ // Load sheets api
             gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
@@ -224,7 +224,7 @@ function copyDataFromOldSheet () {
                 spreadsheetId: oldSheetId,
                 range: compatible_versions[0].hours,
               }).then(hours_response=>{
-                updateSheet(days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
+                updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
                 trashFile(oldSheetId); // Move the old file to the trash
               });
             });
@@ -242,9 +242,9 @@ function copyDataFromOldSheet () {
  */
 function trashFile(fileId) {
   appendPre("Flytter gammelt regneark til papirkurven…");
-  gapi.client.drive.files.trash({"fileId": fileId}).execute(resp=>{
+  /*gapi.client.drive.files.trash({"fileId": fileId}).execute(resp=>{
     if (resp.error) console.warn(resp.error, resp);
-  });
+  });*/
 }
 
 /**
@@ -270,12 +270,12 @@ function trashIncompatibles() {
 * @param {string|number} preset_hours Amount of hours abscence
 * @param {string|number} extra Extra school hours worked
 */
-function updateSheet(days, hours, extra) {
+function updateSheet(sheetId, days, hours, extra) {
+  console.log("Trying to update",sheetId)
   q("pre").innerHTML = "";
   q("form").style.display = "none";
   if (days && hours) {
     q("pre").style.display = "block";
-    firstVisit = false;
     values = [];
     values[version.days[0]] = [];
     values[version.hours[0]] = [];
@@ -285,13 +285,13 @@ function updateSheet(days, hours, extra) {
     values[version.extra[0]][version.extra[1]] = extra;
     appendPre("Oppdaterer fravær…");
     gapi.client.sheets.spreadsheets.values.update({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId: sheetId,
       range: version.range,
       valueInputOption: "USER_ENTERED",
       values: values
     }).then(resp=>{
       appendPre("Fravær er oppdatert, laster inn plusstimer på nytt…");
-      fetchAndOutputData();
+      fetchAndOutputData(sheetId, false);
     });
   } else {
     showUpdateForm();
@@ -300,27 +300,26 @@ function updateSheet(days, hours, extra) {
 
 /**
  * Show the update form
- * @param {object} event Click event object
+ * @param {optional} hide  If present and truthy, the form will be hidden instead of shown
+ * @param {object}   event Click event object
  */
-function showUpdateForm(event) {
+function showUpdateForm(hide, event) {
   if (event) event.preventDefault();
-  q("form").style.display = "block";
-  q("#result-wrapper").style.display = "none";
+  q("form").style.display = hide ? "none" : "block";
+  q("#result-wrapper").style.display = hide ? "flex" : "none";
 }
 
 /**
  * Handle update form submission
  */
-document.addEventListener("DOMContentLoaded", ()=>{
-  q("form").addEventListener("submit", event=>{
-    event.preventDefault();
-    updateSheet(q("form")[0].value, q("form")[1].value, q("form")[2].value);
+function setEventListeners(sheetId) {
+  document.addEventListener("DOMContentLoaded", ()=>{
+    q("form").onsubmit = event=>{
+      event.preventDefault();
+      updateSheet(sheetId, q("form")[0].value, q("form")[1].value, q("form")[2].value);
+    };
   });
-  q("#back").addEventListener("click", event=>{
-    q("form").style.display = "none";
-    q("#result-wrapper").style.display = "flex";
-  });
-});
+}
 
 /**
 * Append text to the pre element containing the given message.
