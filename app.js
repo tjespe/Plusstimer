@@ -241,7 +241,9 @@ function copyDataFromOldSheet () {
  */
 function trashFile(fileId) {
   appendPre("Flytter gammelt regneark til papirkurven…");
-  gapi.client.drive.files.trash({"fileId": fileId});
+  gapi.client.drive.files.trash({"fileId": fileId}).execute(resp=>{
+    if (resp.error) console.warn(resp.error, resp);
+  });
 }
 
 /**
