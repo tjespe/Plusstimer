@@ -305,12 +305,10 @@ function showUpdateForm(hide, event) {
  * Handle update form submission
  */
 function setEventListeners(sheetId) {
-  document.addEventListener("DOMContentLoaded", ()=>{
-    q("form").onsubmit = event=>{
-      event.preventDefault();
-      updateSheet(sheetId, q("form")[0].value, q("form")[1].value, q("form")[2].value);
-    };
-  });
+  q("form").onsubmit = event=>{
+    event.preventDefault();
+    updateSheet(sheetId, q("form")[0].value, q("form")[1].value, q("form")[2].value);
+  };
 }
 
 /**
