@@ -196,7 +196,6 @@ function copyFile() {
 * Get data from old compatible spreadsheet and insert it into the new one
 */
 function copyDataFromOldSheet (newSheetId) {
-  console.log("Trying to copy data from old sheet to",newSheetId)
   appendPre("Prøver å finne et gammelt regneark…");
   gapi.client.drive.files.list({ // Query user's Drive
     "q": "fullText contains '"+compatible_versions[0].key+"'"
@@ -263,7 +262,6 @@ function trashIncompatibles() {
 * @param {string|number} extra Extra school hours worked
 */
 function updateSheet(sheetId, days, hours, extra) {
-  console.log("Trying to update",sheetId)
   q("pre").innerHTML = "";
   q("form").style.display = "none";
   if (days && hours) {
