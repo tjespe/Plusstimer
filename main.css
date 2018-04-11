@@ -122,6 +122,12 @@ menu > * {
 menu > *:last-child {
   margin-right: 0;
 }
+menu > *:active {
+  background: #ddd;
+}
+menu > *:focus {
+  outline: 0;
+}
 
 /** Result display */
 #result-wrapper {
