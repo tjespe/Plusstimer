@@ -1,3 +1,4 @@
+/** General */
 html {
   min-height: 100%;
   display: flex;
@@ -35,6 +36,22 @@ input, pre, info, .button {
   color: inherit;
   -webkit-appearance: none;
 }
+pre {
+  line-height: 1.5;
+  font-size: 1em !important;
+  white-space: pre-line;
+  word-wrap: break-word;
+  padding-top: 0;
+  padding-bottom: 55px;
+  margin: auto;
+}
+#authorize-div {
+  display: none;
+  margin-top: 30px;
+  margin-bottom: -50px;
+}
+
+/** Input information boxes */
 info {
   position: absolute;
   margin: 22px 0 0 -142.5px;
@@ -72,6 +89,8 @@ info:before {
     opacity: 0;
   }
 }
+
+/** Form */
 input:focus + info {
   z-index: 1000;
   opacity: 1;
@@ -91,15 +110,14 @@ form:invalid>input[type="submit"], input:invalid {
   background: #f2dede;
   border-color: #a94442;
 }
-pre {
-  line-height: 1.5;
-  font-size: 1em !important;
-  white-space: pre-line;
-  word-wrap: break-word;
-  padding-top: 0;
-  padding-bottom: 55px;
+form#update {
+  max-width: calc(210px + 74px);
+  width: calc(62vw + 74px);
+  display: none;
   margin: auto;
 }
+
+/** Menu */
 menu {
   display: flex;
   padding: 0;
@@ -112,16 +130,12 @@ menu > *:last-child {
   margin-right: 0;
 }
 
+/** Result display */
 #result-wrapper {
   flex-direction: column;
   align-items: center;
   justify-content: center;
   display: none;
-}
-.caption {
-  width: 62vw;
-  max-width:274px;
-  font-size: small;
 }
 #result {
   width: 62vw;
@@ -135,28 +149,21 @@ menu > *:last-child {
   padding: 2em;
   box-shadow: 0 2px 14px #aaa;
 }
-form#update {
-  max-width: calc(210px + 74px);
-  width: calc(62vw + 74px);
-  display: none;
-  margin: auto;
-}
-#authorize-div {
-  display: none;
-  margin-top: 30px;
-  margin-bottom: -50px;
-}
-
 .number {
   font-size: 130px;
   width: 100%;
   letter-spacing: 10px;
 }
-
-description {
+.description {
   font-size: 1.75em;
 }
+.caption {
+  width: 62vw;
+  max-width:274px;
+  font-size: small;
+}
 
+/** Loading animation */
 @keyframes spin {0% {transform: rotate(45deg)}17% {transform: rotate(300deg)}34% {transform: rotate(90deg)}51% {transform: rotate(450deg)}66% {transform: rotate(135deg)}83% {transform: rotate(495deg)}100% {transform: rotate(405deg)}}
 #loading {
   margin-bottom: -50px;
