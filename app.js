@@ -45,7 +45,6 @@ function checkAuth() {
 * Initiate auth flow in response to user clicking authorize button.
 */
 function handleAuthClick() {
-  q("#authorize-div").style.display = "none"; // Hide auth UI
   gapi.auth.authorize(
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
     result=>handleAuthResult({...result, hideAuth: true})
@@ -69,6 +68,7 @@ function handleAuthResult(authResult) {
   hideLoading();
   if (authResult && !authResult.error) {
     q("#authorize-div").style.display = "none"; // Hide auth UI
+    clearPre();
     loadGDriveApi(); // Load client library
   } else if (!authResult.hasOwnProperty("hideAuth")) {
     q("#authorize-div").style.display = "block"; // Show auth UI, allowing the user to initiate authorization by clicking a button.
@@ -240,7 +240,6 @@ function trashFile(fileId) {
 
 /**
  * Move all outdated files to trash
- * @return {[type]} [description]
  */
 function trashIncompatibles() {
   for (let i = 0;i < incompatible_versions.length;i++) {
@@ -262,7 +261,7 @@ function trashIncompatibles() {
 * @param {string|number} extra Extra school hours worked
 */
 function updateSheet(sheetId, days, hours, extra) {
-  q("pre").innerHTML = "";
+  clearPre();
   q("form").style.display = "none";
   if (days && hours) {
     q("pre").style.display = "block";
@@ -315,4 +314,12 @@ function setEventListeners(sheetId) {
 */
 function appendPre(message) {
   q("pre").innerHTML += "<h4>"+message+"</h4>";
+}
+
+/**
+ * Clears the pre element
+ */
+function clearPre() {
+  q("pre").innerHTML = "";
+  q("pre").style.paddingTop = "40px";
 }

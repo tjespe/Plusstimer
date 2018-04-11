@@ -37,10 +37,7 @@ input, pre, info, .button {
   -webkit-appearance: none;
 }
 pre {
-  line-height: 1.5;
-  font-size: 1em !important;
   white-space: pre-line;
-  word-wrap: break-word;
   padding-top: 0;
   padding-bottom: 55px;
   margin: auto;
@@ -95,10 +92,6 @@ input:focus + info {
   z-index: 1000;
   opacity: 1;
 }
-input[type="submit"] {
-  max-width: calc(210px + 76px);
-  width: calc(62vw + 76px);
-}
 form:valid>input[type="submit"], .button {
   cursor: pointer;
 }
@@ -151,8 +144,6 @@ menu > *:last-child {
 }
 .number {
   font-size: 130px;
-  width: 100%;
-  letter-spacing: 10px;
 }
 .description {
   font-size: 1.75em;
