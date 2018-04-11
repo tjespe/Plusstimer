@@ -38,7 +38,7 @@ function checkAuth() {
     "client_id": CLIENT_ID,
     "scope": SCOPES.join(" "),
     "immediate": true
-  }, result=>(handleAuthResult(result), clearTimeout(timeout)));
+  }, result=>(q("#authorize-div").style.display = "block", handleAuthResult(result), clearTimeout(timeout)));
 }
 
 /**
@@ -47,7 +47,7 @@ function checkAuth() {
 function handleAuthClick() {
   gapi.auth.authorize(
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-    result=>handleAuthResult({...result, hideAuth: true})
+    handleAuthResult
   );
   appendPre("Autoriserer…");
 }
@@ -70,8 +70,6 @@ function handleAuthResult(authResult) {
     q("#authorize-div").style.display = "none"; // Hide auth UI
     clearPre();
     loadGDriveApi(); // Load client library
-  } else if (!authResult.hasOwnProperty("hideAuth")) {
-    q("#authorize-div").style.display = "block"; // Show auth UI, allowing the user to initiate authorization by clicking a button.
   }
 }
 
