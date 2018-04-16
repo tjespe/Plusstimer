@@ -166,3 +166,15 @@ menu > *:focus {
   margin-bottom: -50px;
   animation: spin 5s infinite;
 }
+pre h4:last-child::after {
+  animation: spin 5s infinite;
+  background-image: url(/img/loading.svg);
+  background-size: contain;
+  content: " ";
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+}
+pre h4.error::after {
+  content: none;
+}

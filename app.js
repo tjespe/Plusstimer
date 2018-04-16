@@ -79,7 +79,7 @@ function handleAuthResult(authResult) {
 function apiLoadErr() {
   hideLoading();
   document.querySelectorAll("pre h4").forEach(node=>node.remove());
-  appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet.");
+  appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet.", true);
 }
 
 /**
@@ -108,7 +108,7 @@ function findFile() {
     } else if (resp.error.code == 401) {
       checkAuth(); // Access token might have expired.
     } else {
-      appendPre("En feil oppsto: " + resp.error.message);
+      appendPre("En feil oppsto: " + resp.error.message, true);
     }
   });
 }
@@ -165,14 +165,14 @@ function fetchAndOutputData(sheetId, autoShowForm) {
         q("form")[2].value = range.values[version.extra[0]][version.extra[1]];
         q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
       } else { // Handle unsuccessful validation of response
-        appendPre("Fant ingen data.");
+        appendPre("Fant ingen data.", true);
       }
       if (autoShowForm) showUpdateForm();
     }, response=>{ // Handle erroneous response
-      appendPre("Feil: " + response.result.error.message);
+      appendPre("Feil: " + response.result.error.message, true);
     });
   } else {  // Handle unsuccessful validation of the spreadsheetId variable (this should never happen, but the user should get an explanation if it does)
-    appendPre("Something went wrong, refresh the page and try again");
+    appendPre("Something went wrong, refresh the page and try again", true);
   }
 }
 
@@ -309,9 +309,10 @@ function setEventListeners(sheetId) {
 /**
 * Append text to the pre element containing the given message.
 * @param {string} message Text to be placed in pre element.
+* @param {boolean} error Whether or not the message is an error
 */
-function appendPre(message) {
-  q("pre").innerHTML += "<h4>"+message+"</h4>";
+function appendPre(message, error) {
+  q("pre").innerHTML += "<h4"+(error ? " class=error" : "")+">"+message+"</h4>";
 }
 
 /**
