@@ -49,7 +49,7 @@ function handleAuthClick() {
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
     handleAuthResult
   );
-  appendPre("Autoriserer…");
+  appendPre("Autoriserer");
 }
 
 /**
@@ -86,7 +86,7 @@ function apiLoadErr() {
 * Load Google Drive API library.
 */
 function loadGDriveApi() {
-  appendPre("Laster inn viktige filer…");
+  appendPre("Laster inn viktige filer");
   gapi.client.load("drive", "v2", findFile);
 }
 
@@ -94,7 +94,7 @@ function loadGDriveApi() {
 * Find the right file.
 */
 function findFile() {
-  appendPre("Finner regnearket…");
+  appendPre("Finner regnearket");
   gapi.client.drive.files.list({
     "q": "fullText contains '"+version.key+"'"
   }).execute(resp=>{
@@ -124,7 +124,7 @@ function getID(items) {
       return items[i].id; // Return ID of matching spreadsheet
     }
   }
-  appendPre("Oppretter regneark…"); // Create new file if no matches were found
+  appendPre("Oppretter regneark"); // Create new file if no matches were found
   copyFile();
 }
 
@@ -134,7 +134,7 @@ function getID(items) {
 * @param {function()} callback Function to execute after loading API.
 */
 function loadSheetsApi(callback, ...args) {
-  appendPre("Laster inn flere viktige filer…");
+  appendPre("Laster inn flere viktige filer");
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response=>{
     args.length ? callback(...args) : callback(response);
   });
@@ -144,7 +144,7 @@ function loadSheetsApi(callback, ...args) {
 * Fetch and print the data
 */
 function fetchAndOutputData(sheetId, autoShowForm) {
-  appendPre("Laster inn plusstimer…");
+  appendPre("Laster inn plusstimer");
   if (typeof sheetId === "string") { // Validate the sheetId parameter
     gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
       spreadsheetId: sheetId,
@@ -194,7 +194,7 @@ function copyFile() {
 * Get data from old compatible spreadsheet and insert it into the new one
 */
 function copyDataFromOldSheet (newSheetId) {
-  appendPre("Prøver å finne et gammelt regneark…");
+  appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
     "q": "fullText contains '"+compatible_versions[0].key+"'"
   }).execute(resp=>{ // Handle response
@@ -230,7 +230,7 @@ function copyDataFromOldSheet (newSheetId) {
  * @param {String} fileId ID of the file to trash.
  */
 function trashFile(fileId) {
-  appendPre("Flytter gammelt regneark til papirkurven…");
+  appendPre("Flytter gammelt regneark til papirkurven");
   gapi.client.drive.files.trash({"fileId": fileId}).execute(resp=>{
     if (resp.error) console.warn(resp.error, resp);
   });
@@ -270,14 +270,14 @@ function updateSheet(sheetId, days, hours, extra) {
     values[version.days[0]][version.days[1]] = days;
     values[version.hours[0]][version.hours[1]] = hours;
     values[version.extra[0]][version.extra[1]] = extra;
-    appendPre("Oppdaterer fravær…");
+    appendPre("Oppdaterer fravær");
     gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
       range: version.range,
       valueInputOption: "USER_ENTERED",
       values: values
     }).then(resp=>{
-      appendPre("Fravær er oppdatert, laster inn plusstimer på nytt…");
+      appendPre("Fravær er oppdatert, laster inn plusstimer på nytt");
       fetchAndOutputData(sheetId, false);
     });
   } else {
