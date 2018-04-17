@@ -3,7 +3,7 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.goo
 
 const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
-const version = { // Info regarding the current version of the spreadsheet
+const VERSION = { // Info regarding the current version of the spreadsheet
   key: "Versjon ll20s0gc", // A unique identifier for the document
   title: "Plusstimer vår 2018", // The name the spreadsheet will get in the user's Drive
   template: "18JNjXO_RUPuH4414LOKF0vzgqLVQomnF_LmXMjtKc2A", // The drive id for the template
@@ -18,16 +18,16 @@ const version = { // Info regarding the current version of the spreadsheet
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Currently only one element is supported in this array but that will be fixed in the future.
 */
-const compatible_versions = [{
+const COMPATIBLE_VERSIONS = [{
   key: "Plusstimer 2018 vår gfxksll",         // A string of random words only found in that spreadsheet
   days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
   hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
 }];
 
 /**
- * The point of this array is to delete old and outdated spreadsheets created by this web app
+ * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
  */
-const incompatible_versions = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
+const INCOMPATIBLE_VERSIONS = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
 
 /**
 * Check if current user has authorized this application.
@@ -96,7 +96,7 @@ function loadGDriveApi() {
 function findFile() {
   appendPre("Finner regnearket");
   gapi.client.drive.files.list({
-    "q": "fullText contains '"+version.key+"'"
+    "q": "fullText contains '"+VERSION.key+"'"
   }).execute(resp=>{
     if (!resp.error) {
       trashIncompatibles();
@@ -148,21 +148,21 @@ function fetchAndOutputData(sheetId, autoShowForm) {
   if (typeof sheetId === "string") { // Validate the sheetId parameter
     gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
       spreadsheetId: sheetId,
-      range: version.range
+      range: VERSION.range
     }).then(response=>{  // Handle successful response
       appendPre("Lasting fullført.");
       let range = response.result;
       if (range.values.length > 0) { // Validate response and print result
-        days = range.values[version.days[0]][version.days[1]];
-        hours = range.values[version.hours[0]][version.hours[1]];
-        appendPre(range.values[version.plusstimer[0]][version.plusstimer[1]] + "plusstimer");
+        days = range.values[VERSION.days[0]][VERSION.days[1]];
+        hours = range.values[VERSION.hours[0]][VERSION.hours[1]];
+        appendPre(range.values[VERSION.plusstimer[0]][VERSION.plusstimer[1]] + "plusstimer");
         q("#result>.number").innerHTML = Number(range.values[0][3]);
         q("#result-wrapper").style.display = "flex";
         q("#caption>a").innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
         q("pre").style.display = "none";
         q("form")[0].value = days;
         q("form")[1].value = hours;
-        q("form")[2].value = range.values[version.extra[0]][version.extra[1]];
+        q("form")[2].value = range.values[VERSION.extra[0]][VERSION.extra[1]];
         q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
@@ -181,11 +181,11 @@ function fetchAndOutputData(sheetId, autoShowForm) {
 */
 function copyFile() {
   gapi.client.drive.files.copy({
-    "fileId": version.template,
-    "resource": {"title": version.title}
+    "fileId": VERSION.template,
+    "resource": {"title": VERSION.title}
   }).execute(resp=>{
-    if (compatible_versions.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-    loadSheetsApi(()=>fetchAndOutputData(resp.id, compatible_versions.length > 0));
+    if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
+    loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length > 0));
     setEventListeners(resp.id);
   });
 }
@@ -196,7 +196,7 @@ function copyFile() {
 function copyDataFromOldSheet (newSheetId) {
   appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
-    "q": "fullText contains '"+compatible_versions[0].key+"'"
+    "q": "fullText contains '"+COMPATIBLE_VERSIONS[0].key+"'"
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       let items = resp.items;
@@ -207,11 +207,11 @@ function copyDataFromOldSheet (newSheetId) {
           loadSheetsApi(()=>{ // Load sheets api
             gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
               spreadsheetId: oldSheetId,
-              range: compatible_versions[0].days,
+              range: COMPATIBLE_VERSIONS[0].days,
             }).then(days_response=>{
               gapi.client.sheets.spreadsheets.values.get({ // Get amount of hours abscence
                 spreadsheetId: oldSheetId,
-                range: compatible_versions[0].hours,
+                range: COMPATIBLE_VERSIONS[0].hours,
               }).then(hours_response=>{
                 updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
                 trashFile(oldSheetId); // Move the old file to the trash
@@ -240,9 +240,9 @@ function trashFile(fileId) {
  * Move all outdated files to trash
  */
 function trashIncompatibles() {
-  for (let i = 0;i < incompatible_versions.length;i++) {
+  for (let i = 0;i < INCOMPATIBLE_VERSIONS.length;i++) {
     gapi.client.drive.files.list({ // Query user's Drive
-      "q": "fullText contains '"+incompatible_versions[i]+"'"
+      "q": "fullText contains '"+INCOMPATIBLE_VERSIONS[i]+"'"
     }).execute(resp=>{
       for (let j = 0; j < resp.items.length; j++) {
         if (resp.items[j].mimeType == "application/vnd.google-apps.spreadsheet" && !resp.items[j].labels.trashed) trashFile(resp.items[j].id);
@@ -264,16 +264,16 @@ function updateSheet(sheetId, days, hours, extra) {
   if (days && hours) {
     q("pre").style.display = "block";
     values = [];
-    values[version.days[0]] = [];
-    values[version.hours[0]] = [];
-    values[version.extra[0]] = [];
-    values[version.days[0]][version.days[1]] = days;
-    values[version.hours[0]][version.hours[1]] = hours;
-    values[version.extra[0]][version.extra[1]] = extra;
+    values[VERSION.days[0]] = [];
+    values[VERSION.hours[0]] = [];
+    values[VERSION.extra[0]] = [];
+    values[VERSION.days[0]][VERSION.days[1]] = days;
+    values[VERSION.hours[0]][VERSION.hours[1]] = hours;
+    values[VERSION.extra[0]][VERSION.extra[1]] = extra;
     appendPre("Oppdaterer fravær");
     gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: version.range,
+      range: VERSION.range,
       valueInputOption: "USER_ENTERED",
       values: values
     }).then(resp=>{
