@@ -277,7 +277,6 @@ function updateSheet(sheetId, days, hours, extra) {
       valueInputOption: "USER_ENTERED",
       values: values
     }).then(resp=>{
-      appendPre("Fravær er oppdatert, laster inn plusstimer på nytt");
       fetchAndOutputData(sheetId, false);
     });
   } else {
