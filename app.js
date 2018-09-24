@@ -1,5 +1,6 @@
 const CLIENT_ID = "1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleusercontent.com"; // Client ID from https://console.developers.google.com
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]; // The nexessary API scopes
+const MIME = "application/vnd.google-apps.spreadsheet";
 
 const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
@@ -33,7 +34,7 @@ const INCOMPATIBLE_VERSIONS = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 
 * Check if current user has authorized this application.
 */
 function checkAuth() {
-  let timeout = setTimeout(apiLoadErr, 3000);
+  const timeout = setTimeout(apiLoadErr, 3000);
   gapi.auth.authorize({
     "client_id": CLIENT_ID,
     "scope": SCOPES.join(" "),
@@ -56,7 +57,7 @@ function handleAuthClick() {
 * Hide loading text
 */
 function hideLoading() {
-  if (el = document.querySelector("#loading")) el.remove();
+  if (q("#loading")) q("#loading").remove();
 }
 
 /**
@@ -100,10 +101,10 @@ function findFile() {
   }).execute(resp=>{
     if (!resp.error) {
       trashIncompatibles();
-      sheetId = getID(resp.items);
+      const sheetId = getID(resp.items);
       if (sheetId) {
         loadSheetsApi(fetchAndOutputData, sheetId, false);
-        setEventListeners(sheetId);
+        setEventListener(sheetId);
       }
     } else if (resp.error.code == 401) {
       checkAuth(); // Access token might have expired.
@@ -119,13 +120,9 @@ function findFile() {
 * @param {array} items Array of documents in user's Drive that match the search query
 */
 function getID(items) {
-  for (let i = 0; i < items.length; i++) { // Loop through items and search for match
-    if (items[i].mimeType == "application/vnd.google-apps.spreadsheet" && !items[i].labels.trashed) {
-      return items[i].id; // Return ID of matching spreadsheet
-    }
-  }
-  appendPre("Oppretter regneark"); // Create new file if no matches were found
-  copyFile();
+  const match = items.find(item=>item.mimeType === MIME && !item.labels.trashed);
+  if (match) return match.id;
+  else appendPre("Oppretter regneark"), copyFile();
 }
 
 /**
@@ -151,10 +148,10 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       range: VERSION.range
     }).then(response=>{  // Handle successful response
       appendPre("Lasting fullført.");
-      let range = response.result;
+      const range = response.result;
       if (range.values.length > 0) { // Validate response and print result
-        days = range.values[VERSION.days[0]][VERSION.days[1]];
-        hours = range.values[VERSION.hours[0]][VERSION.hours[1]];
+        const days = range.values[VERSION.days[0]][VERSION.days[1]];
+        const hours = range.values[VERSION.hours[0]][VERSION.hours[1]];
         appendPre(range.values[VERSION.plusstimer[0]][VERSION.plusstimer[1]] + "plusstimer");
         q("#result>.number").innerHTML = Number(range.values[0][3]);
         q("#result-wrapper").style.display = "flex";
@@ -171,7 +168,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message, true);
     });
-  } else {  // Handle unsuccessful validation of the spreadsheetId variable (this should never happen, but the user should get an explanation if it does)
+  } else {  // Handle unsuccessful validation of the sheetId variable (this should never happen, but the user should get an explanation if it does)
     appendPre("Something went wrong, refresh the page and try again", true);
   }
 }
@@ -186,7 +183,7 @@ function copyFile() {
   }).execute(resp=>{
     if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
     loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length > 0));
-    setEventListeners(resp.id);
+    setEventListener(resp.id);
   });
 }
 
@@ -199,26 +196,23 @@ function copyDataFromOldSheet (newSheetId) {
     "q": "fullText contains '"+COMPATIBLE_VERSIONS[0].key+"'"
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
-      let items = resp.items;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].mimeType == "application/vnd.google-apps.spreadsheet" && !items[i].labels.trashed) {
-          appendPre("Fant et gammelt regneark");
-          let oldSheetId = items[i].id;
-          loadSheetsApi(()=>{ // Load sheets api
-            gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
-              spreadsheetId: oldSheetId,
-              range: COMPATIBLE_VERSIONS[0].days,
-            }).then(days_response=>{
-              gapi.client.sheets.spreadsheets.values.get({ // Get amount of hours abscence
-                spreadsheetId: oldSheetId,
-                range: COMPATIBLE_VERSIONS[0].hours,
-              }).then(hours_response=>{
-                updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
-                trashFile(oldSheetId); // Move the old file to the trash
-              });
+      const oldSheet = resp.items.find(item=>item.mimeType === MIME && !item.labels.trashed);
+      if (oldSheet) {
+        appendPre("Fant et gammelt regneark");
+        loadSheetsApi(()=>{ // Load sheets api
+          gapi.client.sheets.spreadsheets.values.get({ // Get amount of days abscence
+            spreadsheetId: oldSheet.id,
+            range: COMPATIBLE_VERSIONS[0].days,
+          }).then(days_response=>{
+            gapi.client.sheets.spreadsheets.values.get({ // Get amount of hours abscence
+              spreadsheetId: oldSheet.id,
+              range: COMPATIBLE_VERSIONS[0].hours,
+            }).then(hours_response=>{
+              updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
+              trashFile(oldSheet.id); // Move the old file to the trash
             });
           });
-        }
+        });
       }
     }
   });
@@ -240,15 +234,11 @@ function trashFile(fileId) {
  * Move all outdated files to trash
  */
 function trashIncompatibles() {
-  for (let i = 0;i < INCOMPATIBLE_VERSIONS.length;i++) {
+  INCOMPATIBLE_VERSIONS.forEach(version=>{
     gapi.client.drive.files.list({ // Query user's Drive
-      "q": "fullText contains '"+INCOMPATIBLE_VERSIONS[i]+"'"
-    }).execute(resp=>{
-      for (let j = 0; j < resp.items.length; j++) {
-        if (resp.items[j].mimeType == "application/vnd.google-apps.spreadsheet" && !resp.items[j].labels.trashed) trashFile(resp.items[j].id);
-      }
-    });
-  }
+      "q": "fullText contains '"+version+"'"
+    }).execute(resp=>resp.items.filter(item=>item.mimeType == MIME && !item.labels.trashed).map(item=>item.id).forEach(trashFile))
+  });
 }
 
 /*
@@ -263,13 +253,9 @@ function updateSheet(sheetId, days, hours, extra) {
   q("form").style.display = "none";
   if (days && hours) {
     q("pre").style.display = "block";
-    values = [];
-    values[VERSION.days[0]] = [];
-    values[VERSION.hours[0]] = [];
-    values[VERSION.extra[0]] = [];
-    values[VERSION.days[0]][VERSION.days[1]] = days;
-    values[VERSION.hours[0]][VERSION.hours[1]] = hours;
-    values[VERSION.extra[0]][VERSION.extra[1]] = extra;
+    const values = [];
+    ["days", "hours", "extra"].forEach(key=>values[VERSION[key][0]] = []);
+    ["days", "hours", "extra"].forEach(key=>values[VERSION[key][0]][VERSION[key][1]] = eval(key));
     appendPre("Oppdaterer fravær");
     gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
@@ -298,10 +284,10 @@ function showUpdateForm(hide, event) {
 /**
  * Handle update form submission
  */
-function setEventListeners(sheetId) {
+function setEventListener(sheetId) {
   q("form").onsubmit = event=>{
     event.preventDefault();
-    updateSheet(sheetId, q("form")[0].value, q("form")[1].value, q("form")[2].value);
+    updateSheet(sheetId, ...[...event.target].map(el=>el.value));
   };
 }
 
@@ -311,7 +297,7 @@ function setEventListeners(sheetId) {
 * @param {boolean} error Whether or not the message is an error
 */
 function appendPre(message, error) {
-  q("pre").innerHTML += "<h4"+(error ? " class=error" : "")+">"+message+"</h4>";
+  q("pre").innerHTML += `<h4 ${error ? `class="error"` : ``}>${message}</h4>`;
 }
 
 /**
