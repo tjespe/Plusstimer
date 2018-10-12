@@ -5,9 +5,9 @@ const MIME = "application/vnd.google-apps.spreadsheet";
 const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
 
 const VERSION = { // Info regarding the current version of the spreadsheet
-  key: "Versjon ll20s0gc", // A unique identifier for the document
-  title: "Plusstimer vår 2018", // The name the spreadsheet will get in the user's Drive
-  template: "18JNjXO_RUPuH4414LOKF0vzgqLVQomnF_LmXMjtKc2A", // The drive id for the template
+  key: "Version sq33hhst18uu", // A unique identifier for the document
+  title: "Plusstimer høst 2018", // The name the spreadsheet will get in the user's Drive
+  template: "13npTQiU_dpShq4TjTAWu7Em5NyAUEjebio-1C-T263Q", // The drive id for the template
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
   days: [0,0], // The vertical and horizontal position of days in the range, respectively
   hours: [0,1], // The vertical and horizontal position of hours in the range, respectively
@@ -19,11 +19,11 @@ const VERSION = { // Info regarding the current version of the spreadsheet
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Currently only one element is supported in this array but that will be fixed in the future.
 */
-const COMPATIBLE_VERSIONS = [{
+const COMPATIBLE_VERSIONS = [/*{
   key: "Plusstimer 2018 vår gfxksll",         // A string of random words only found in that spreadsheet
   days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
   hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
-}];
+}*/];
 
 /**
  * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
