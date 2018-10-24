@@ -17,7 +17,6 @@
   <link rel="stylesheet" type="text/css" href="main.css?v=13">
   <link rel="apple-touch-icon" href="img/app-icon.png" />
   <link rel="icon" href="img/favicon.png">
-  <script src="app.js?v=13"></script>
   <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 </head>
 <body>
@@ -39,9 +38,17 @@
     <input type="text" name="hours" required="true">
     <info>Skriv hele klokketimer (60 min) direkte fra skolearena<br><img src="https://i.snag.gy/deH0i2.jpg"></info>
 
-    <h4>Hvor mange ekstratimer har du fått?</h4>
-    <input type="text" name="extra" placeholder="0">
-    <info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info>
+    <div id="extra-form">
+      <h4>Har du jobbet på elevlagsmesse, åpen dag e.l.?</h4>
+      <label><input type="radio" name="show_extra" value="false" checked> Nei</label>
+      <label><input type="radio" name="show_extra" value="true" id="show-extra"> Ja</label>
+    </div>
+
+    <div id="extra-div">
+      <h4>Hvor mange ekstratimer har du fått?</h4>
+      <input type="text" name="extra" placeholder="0">
+      <info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info>
+    </div>
 
     <menu>
       <a id="back" class="button" style="flex:1" onclick="showUpdateForm(true, event)"><</a>
@@ -56,5 +63,7 @@
     </div>
     <img id="loading" src="img/loading.svg">
   </pre>
+
+  <script src="app.js?v=14"></script>
 </body>
 </html>

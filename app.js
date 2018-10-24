@@ -17,18 +17,17 @@ const VERSION = { // Info regarding the current version of the spreadsheet
 
 /**
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
-* Currently only one element is supported in this array but that will be fixed in the future.
+* Each object in this array must have three properties:
+*   {String} key   A string of random words only found in that spreadsheet
+    {String} days  The cell that contains amount of days abscence
+    {String} hours The cell that contains amount of hours abscence
 */
-const COMPATIBLE_VERSIONS = [/*{
-  key: "Plusstimer 2018 vår gfxksll",         // A string of random words only found in that spreadsheet
-  days: "Plusstimer!D7",                      // The cell that contains amount of days abscence
-  hours: "Plusstimer!E7"                      // The cell that contains amount of hours abscence
-}*/];
+const COMPATIBLE_VERSIONS = [];
 
 /**
  * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
  */
-const INCOMPATIBLE_VERSIONS = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte"];
+const INCOMPATIBLE_VERSIONS = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte", "Plusstimer 2018 vår gfxksll"];
 
 /**
 * Check if current user has authorized this application.
@@ -150,17 +149,17 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       appendPre("Lasting fullført.");
       const range = response.result;
       if (range.values.length > 0) { // Validate response and print result
-        const days = range.values[VERSION.days[0]][VERSION.days[1]];
-        const hours = range.values[VERSION.hours[0]][VERSION.hours[1]];
-        appendPre(range.values[VERSION.plusstimer[0]][VERSION.plusstimer[1]] + "plusstimer");
-        q("#result>.number").innerHTML = Number(range.values[0][3]);
+        const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(key=>range.values[VERSION[key][0]][VERSION[key][1]]);
+        q("#result>.number").innerHTML = plusstimer;
         q("#result-wrapper").style.display = "flex";
         q("#caption>a").innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
         q("pre").style.display = "none";
         q("form")[0].value = days;
         q("form")[1].value = hours;
-        q("form")[2].value = range.values[VERSION.extra[0]][VERSION.extra[1]];
+        q("form")[2].value = extra;
         q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
+        console.log(extra, extra > 0);
+        showExtraFormIf(extra > 0);
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
@@ -182,7 +181,7 @@ function copyFile() {
     "resource": {"title": VERSION.title}
   }).execute(resp=>{
     if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-    loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length > 0));
+    loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length === 0));
     setEventListener(resp.id);
   });
 }
@@ -193,7 +192,8 @@ function copyFile() {
 function copyDataFromOldSheet (newSheetId) {
   appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
-    "q": "fullText contains '"+COMPATIBLE_VERSIONS[0].key+"'"
+    "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or "),
+    "orderBy": "createdDate desc"
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       const oldSheet = resp.items.find(item=>item.mimeType === MIME && !item.labels.trashed);
@@ -213,7 +213,7 @@ function copyDataFromOldSheet (newSheetId) {
             });
           });
         });
-      }
+      } else showUpdateForm();
     }
   });
 }
@@ -287,7 +287,8 @@ function showUpdateForm(hide, event) {
 function setEventListener(sheetId) {
   q("form").onsubmit = event=>{
     event.preventDefault();
-    updateSheet(sheetId, ...[...event.target].map(el=>el.value));
+    const children = event.target.children;
+    updateSheet(sheetId, ...["days", "hours", "extra"].map(key=>document.getElementsByName(key)[0].value));
   };
 }
 
@@ -307,3 +308,17 @@ function clearPre() {
   q("pre").innerHTML = "";
   q("pre").style.paddingTop = "40px";
 }
+
+/**
+ * If condition is true: shows the extra form, checks the "Yes" box and unchecks the "No" box.
+ * Otherwise: the opposite happens.
+ * @param  {boolean} Whether or not the extra form should be shown
+ */
+function showExtraFormIf(condition) {
+  q("#extra-div").style.display = condition ? "block" : "none";
+  [...document.getElementsByName("show_extra")].forEach((checkbox, i)=>checkbox.checked = i == condition);
+}
+
+["click", "keyup"].forEach(e=>q("#extra-form").addEventListener(e, event=>{
+  showExtraFormIf(q("#show-extra").checked);
+}));

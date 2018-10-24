@@ -23,7 +23,7 @@ h4, h6 {
 a {
   color: #337ab7;
 }
-input, pre, info, .button {
+input[type="text"], [type="submit"], pre, info, .button {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: inherit;
@@ -46,6 +46,9 @@ pre {
   display: none;
   margin-top: 30px;
   margin-bottom: -50px;
+}
+#extra-div {
+  display: none;
 }
 
 /** Input information boxes */
