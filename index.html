@@ -20,12 +20,11 @@
 </head>
 <body>
   <div id="result-wrapper">
-    <div class="caption warning">NB! Hvis du ikke går i tredjeklasse må du endre på <a id="doc-link" target="_blank">denne tabellen</a></div>
     <div id="result">
       <div class="number"></div>
       <span class="description">plusstimer</span>
     </div>
-    <div id="caption" class="caption"><a href onclick="showUpdateForm(false, event)">Klikk her for å oppdatere fravær</a></div>
+    <div id="caption" class="caption"><a href onclick="showUpdateForm(event)">Klikk her for å oppdatere fravær</a></div>
   </div>
 
   <form id="update">
@@ -50,7 +49,16 @@
     </div>
 
     <menu>
-      <a id="back" class="button" style="flex:1" onclick="showUpdateForm(true, event)"><</a>
+      <a id="back" class="button" style="flex:1" onclick="hideUpdateForm(event)"><</a>
+      <input type="submit" value="Send inn" style="flex:10">
+    </menu>
+  </form>
+
+  <form id="losetimer">
+    <h3>Hvilke dager har du <u>løse</u> studietimer?</h3>
+    <div class="grid-3"></div>
+    <menu>
+      <a id="back" class="button" style="flex:1" onclick="hideUpdateForm(event)"><</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>

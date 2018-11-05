@@ -23,18 +23,20 @@ h4, h6 {
 a {
   color: #337ab7;
 }
-input[type="text"], [type="submit"], pre, info, .button {
+input[type="text"], input[type="number"], select, [type="submit"], pre, info, .button {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: inherit;
   font-family: inherit;
   padding: 5px;
   box-shadow: 0 1px 2px #ccc;
-  max-width: calc(210px + 64px);
-  width: calc(62vw + 64px);
   background: #fff;
   color: inherit;
+}
+input[type="text"], [type="submit"], pre, info, .button {
   -webkit-appearance: none;
+  width: calc(62vw + 64px);
+  max-width: calc(210px + 64px);
 }
 pre {
   white-space: pre-line;
@@ -49,6 +51,16 @@ pre {
 }
 #extra-div {
   display: none;
+}
+.grid-3 {
+  display: grid;
+  grid-template-areas: ". . .";
+  grid-gap: 10px;
+  grid-template-columns: 20% 40% 33%;
+}
+.grid-3 > * {
+  display: flex;
+  align-items: center;
 }
 
 /** Input information boxes */
@@ -106,7 +118,7 @@ form:invalid>input[type="submit"], input:invalid {
   background: #f2dede;
   border-color: #a94442;
 }
-form#update {
+form#update, form#losetimer {
   max-width: calc(210px + 74px);
   width: calc(62vw + 74px);
   display: none;

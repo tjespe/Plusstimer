@@ -3,26 +3,36 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.goo
 const MIME = "application/vnd.google-apps.spreadsheet";
 
 const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
+const range = N=>Array(N).fill().map((_, i) => i);
+const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
+
+const COMPONENTS = ["result-wrapper", "update", "losetimer", "output"];
 
 const VERSION = { // Info regarding the current version of the spreadsheet
-  key: "Version sq33hhst18uu", // A unique identifier for the document
+  key: "tnjioe0fh34j9", // A unique identifier for the document
   title: "Plusstimer høst 2018", // The name the spreadsheet will get in the user's Drive
-  template: "13npTQiU_dpShq4TjTAWu7Em5NyAUEjebio-1C-T263Q", // The drive id for the template
+  template: "1xxb6kZ8qfcaK123nFBmwRFlq37ffipWKVyvXDpUdC3E", // The drive id for the template
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
   days: [0,0], // The vertical and horizontal position of days in the range, respectively
   hours: [0,1], // The vertical and horizontal position of hours in the range, respectively
   extra: [0,2], // The vertical and horizontal position of extra hours in the range, respectively
-  plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
+  plusstimer: [0,3],  // The vertical and horizontal position of plusstimer in the range, respectively
+  losetimer: "Plusstimer!L16:O20" // The range with information about løse studietimer
 };
 
 /**
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Each object in this array must have three properties:
-*   {String} key   A string of random words only found in that spreadsheet
-    {String} days  The cell that contains amount of days abscence
-    {String} hours The cell that contains amount of hours abscence
+*   {String} key        A string of random words only found in that spreadsheet
+    {String} days       The cell that contains amount of days abscence
+    {String} hours      The cell that contains amount of hours abscence
+    {String} losetimer  (Optional) Range with information about løse studietimer
 */
-const COMPATIBLE_VERSIONS = [];
+const COMPATIBLE_VERSIONS = [{
+  key: "Version sq33hhst18uu",
+  days: "D7",
+  hours: "E7"
+}];
 
 /**
  * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
@@ -154,11 +164,9 @@ function fetchAndOutputData(sheetId, autoShowForm) {
         q("#result-wrapper").style.display = "flex";
         q("#caption>a").innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
         q("pre").style.display = "none";
-        q("form")[0].value = days;
-        q("form")[1].value = hours;
-        q("form")[2].value = extra;
-        q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
-        console.log(extra, extra > 0);
+        q("#update")[0].value = days;
+        q("#update")[1].value = hours;
+        q("#update")[2].value = extra;
         showExtraFormIf(extra > 0);
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
@@ -275,11 +283,12 @@ function updateSheet(sheetId, days, hours, extra) {
  * @param {optional} hide  If present and truthy, the form will be hidden instead of shown
  * @param {object}   event Click event object
  */
-function showUpdateForm(hide, event) {
+function showUpdateForm(event, hide) {
   if (event) event.preventDefault();
   q("form").style.display = hide ? "none" : "block";
   q("#result-wrapper").style.display = hide ? "flex" : "none";
 }
+const hideUpdateForm = e=>showUpdateForm(e, true);
 
 /**
  * Handle update form submission
@@ -319,6 +328,29 @@ function showExtraFormIf(condition) {
   [...document.getElementsByName("show_extra")].forEach((checkbox, i)=>checkbox.checked = i == condition);
 }
 
+/** Listen for changes in checkbox */
 ["click", "keyup"].forEach(e=>q("#extra-form").addEventListener(e, event=>{
   showExtraFormIf(q("#show-extra").checked);
 }));
+
+/**
+ * Render form that allows user to set when their løse studietimer is
+ * @param  {Array} data Multidimensional array with data from spreadsheet range
+ */
+function renderLosetimer(data) {
+  q("#losetimer").style.display = "block";
+  q("#result-wrapper").style.display = "none";
+  const selectTemplate = dayData=>`<select>${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"].map(time=>`
+      <option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>
+    `).join('')}</select>`;
+  q("#losetimer").querySelector(".grid-3").innerHTML = data.map(dayData=>`
+      <div>${dayData[0]}</div>
+      <input name="amount" type="number" value="${dayData[1]}">
+      ${selectTemplate(dayData)}
+    `).join('');
+};
+
+function hideLosetimer() {
+  q("#losetimer").style.display = "none";
+  q("#result-wrapper").style.display = "block";
+};
