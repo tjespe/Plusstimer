@@ -6,7 +6,9 @@ const q = s=>document.querySelector(s); // Quickly select HTML elements using a 
 const range = N=>Array(N).fill().map((_, i) => i);
 const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
 
-const COMPONENTS = ["result-wrapper", "update", "losetimer", "output"];
+const COMPONENTS = ["#result-wrapper", "form#update", "form#losetimer", "pre#output"];
+const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
+const show = key=>COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none");
 
 const VERSION = { // Info regarding the current version of the spreadsheet
   key: "tnjioe0fh34j9", // A unique identifier for the document
@@ -66,7 +68,8 @@ function handleAuthClick() {
 * Hide loading text
 */
 function hideLoading() {
-  if (q("#loading")) q("#loading").remove();
+  const qr = q("#loading");
+  if (qr) qr.remove();
 }
 
 /**
@@ -171,7 +174,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
-      if (autoShowForm) showUpdateForm();
+      if (autoShowForm) show(UPDATE);
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message, true);
     });
@@ -221,7 +224,7 @@ function copyDataFromOldSheet (newSheetId) {
             });
           });
         });
-      } else showUpdateForm();
+      } else show(UPDATE);
     }
   });
 }
@@ -274,21 +277,9 @@ function updateSheet(sheetId, days, hours, extra) {
       fetchAndOutputData(sheetId, false);
     });
   } else {
-    showUpdateForm();
+    show(UPDATE);
   }
 }
-
-/**
- * Show the update form
- * @param {optional} hide  If present and truthy, the form will be hidden instead of shown
- * @param {object}   event Click event object
- */
-function showUpdateForm(event, hide) {
-  if (event) event.preventDefault();
-  q("form").style.display = hide ? "none" : "block";
-  q("#result-wrapper").style.display = hide ? "flex" : "none";
-}
-const hideUpdateForm = e=>showUpdateForm(e, true);
 
 /**
  * Handle update form submission
@@ -338,8 +329,7 @@ function showExtraFormIf(condition) {
  * @param  {Array} data Multidimensional array with data from spreadsheet range
  */
 function renderLosetimer(data) {
-  q("#losetimer").style.display = "block";
-  q("#result-wrapper").style.display = "none";
+  show(LOSETIMER);
   const selectTemplate = dayData=>`<select>${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"].map(time=>`
       <option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>
     `).join('')}</select>`;
@@ -348,9 +338,4 @@ function renderLosetimer(data) {
       <input name="amount" type="number" value="${dayData[1]}">
       ${selectTemplate(dayData)}
     `).join('');
-};
-
-function hideLosetimer() {
-  q("#losetimer").style.display = "none";
-  q("#result-wrapper").style.display = "block";
 };
