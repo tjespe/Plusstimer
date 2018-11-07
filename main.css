@@ -187,6 +187,9 @@ menu > *:focus {
   margin-bottom: -50px;
   animation: spin 5s infinite;
 }
+pre:empty {
+  display: none;
+}
 pre h4:last-child::after {
   animation: spin 5s infinite;
   background-image: url(/img/loading.svg);

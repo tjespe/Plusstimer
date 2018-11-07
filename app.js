@@ -9,6 +9,7 @@ const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
 const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
 const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
 const show = key=>COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none");
+const getActiveTabs = ()=>COMPONENTS.filter(id=>q(id).style.display === "block");
 
 const VERSION = { // Info regarding the current version of the spreadsheet
   key: "tnjioe0fh34j9", // A unique identifier for the document
@@ -159,22 +160,22 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       spreadsheetId: sheetId,
       range: VERSION.range
     }).then(response=>{  // Handle successful response
-      appendPre("Lasting fullført.");
       const range = response.result;
       if (range.values.length > 0) { // Validate response and print result
+        clearPre();
+        if (getActiveTabs().length) show(RESULT);
         const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(key=>range.values[VERSION[key][0]][VERSION[key][1]]);
         q("#result>.number").innerHTML = plusstimer;
         q("#update")[0].value = days;
         q("#update")[1].value = hours;
         q("#update")[2].value = extra;
         q("#last-update").innerText = "";
-        show(RESULT);
         showExtraFormIf(extra > 0);
         displayLastEditDate(sheetId);
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
-      if (autoShowForm) show(UPDATE);
+      if (autoShowForm) renderLosetimer();
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message, true);
     });
@@ -212,8 +213,7 @@ function copyFile() {
 function copyDataFromOldSheet (newSheetId) {
   appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
-    "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or "),
-    "orderBy": "createdDate desc"
+    "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or ")
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       const oldSheet = resp.items.find(item=>item.mimeType === MIME && !item.labels.trashed);
@@ -229,11 +229,12 @@ function copyDataFromOldSheet (newSheetId) {
               range: COMPATIBLE_VERSIONS[0].hours,
             }).then(hours_response=>{
               updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
+              renderLosetimer();
               trashFile(oldSheet.id); // Move the old file to the trash
             });
           });
         });
-      } else show(UPDATE);
+      } else renderLosetimer();
     }
   });
 }
