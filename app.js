@@ -6,7 +6,7 @@ const q = s=>document.querySelector(s); // Quickly select HTML elements using a 
 const range = N=>Array(N).fill().map((_, i) => i);
 const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
 
-const COMPONENTS = ["#result-wrapper", "form#update", "form#losetimer", "pre#output"];
+const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
 const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
 const show = key=>COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none");
 
@@ -164,13 +164,13 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       if (range.values.length > 0) { // Validate response and print result
         const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(key=>range.values[VERSION[key][0]][VERSION[key][1]]);
         q("#result>.number").innerHTML = plusstimer;
-        q("#result-wrapper").style.display = "flex";
-        q("#caption>a").innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
-        q("pre").style.display = "none";
         q("#update")[0].value = days;
         q("#update")[1].value = hours;
         q("#update")[2].value = extra;
+        q("#last-update").innerText = "";
+        show(RESULT);
         showExtraFormIf(extra > 0);
+        displayLastEditDate(sheetId);
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
@@ -181,6 +181,15 @@ function fetchAndOutputData(sheetId, autoShowForm) {
   } else {  // Handle unsuccessful validation of the sheetId variable (this should never happen, but the user should get an explanation if it does)
     appendPre("Something went wrong, refresh the page and try again", true);
   }
+}
+
+function displayLastEditDate(sheetId) {
+  gapi.client.drive.files.get({
+    fileId: sheetId
+  }).execute(resp=>{
+    const dateStr = resp.modifiedDate;
+    q("#last-update").innerText = `Sist oppdatert ${formatDate(dateStr)}.`;
+  });
 }
 
 /**

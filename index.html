@@ -19,12 +19,17 @@
   <link rel="icon" href="img/favicon.png">
 </head>
 <body>
-  <div id="result-wrapper">
-    <div id="result">
-      <div class="number"></div>
-      <span class="description">plusstimer</span>
+  <div id="result-view">
+    <div id="result-wrapper">
+      <div id="result">
+        <div class="number"></div>
+        <span class="description">plusstimer</span>
+      </div>
+      <div href="#" onclick="show(UPDATE)" class="button">
+        Oppdater fravær
+      </div>
+      <span class="caption" id="last-update"></span>
     </div>
-    <div id="caption" class="caption"><a href onclick="event.preventDefault(); show(UPDATE)">Klikk her for å oppdatere fravær</a></div>
   </div>
 
   <form id="update">
@@ -72,6 +77,7 @@
   </pre>
 
   <script src="app.js?v=14"></script>
+  <script src="date.js?v=1"></script>
   <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 </body>
 </html>
