@@ -8,8 +8,9 @@ const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
 
 const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
 const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
-const show = key=>COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none");
-const getActiveTabs = ()=>COMPONENTS.filter(id=>q(id).style.display === "block");
+const show = key=>
+  key ? COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none")
+      : COMPONENTS.filter(id=>q(id).style.display === "block");
 
 const VERSION = { // Info regarding the current version of the spreadsheet
   key: "tnjioe0fh34j9", // A unique identifier for the document
@@ -163,7 +164,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       const range = response.result;
       if (range.values.length > 0) { // Validate response and print result
         clearPre();
-        if (getActiveTabs().length) show(RESULT);
+        if (!autoShowForm) show(RESULT);
         const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(key=>range.values[VERSION[key][0]][VERSION[key][1]]);
         q("#result>.number").innerHTML = plusstimer;
         q("#update")[0].value = days;
@@ -175,7 +176,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
-      if (autoShowForm) renderLosetimer();
+      if (autoShowForm) renderLosetimer(sheetId);
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message, true);
     });
@@ -202,7 +203,7 @@ function copyFile() {
     "resource": {"title": VERSION.title}
   }).execute(resp=>{
     if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-    loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length === 0));
+    loadSheetsApi(()=>fetchAndOutputData(resp.id, true));
     setEventListener(resp.id);
   });
 }
@@ -229,12 +230,11 @@ function copyDataFromOldSheet (newSheetId) {
               range: COMPATIBLE_VERSIONS[0].hours,
             }).then(hours_response=>{
               updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
-              renderLosetimer();
               trashFile(oldSheet.id); // Move the old file to the trash
             });
           });
         });
-      } else renderLosetimer();
+      } else renderLosetimer(newSheetId);
     }
   });
 }
@@ -336,16 +336,30 @@ function showExtraFormIf(condition) {
 
 /**
  * Render form that allows user to set when their løse studietimer is
- * @param  {Array} data Multidimensional array with data from spreadsheet range
  */
-function renderLosetimer(data) {
-  show(LOSETIMER);
-  const selectTemplate = dayData=>`<select>${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"].map(time=>`
-      <option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>
-    `).join('')}</select>`;
-  q("#losetimer").querySelector(".grid-3").innerHTML = data.map(dayData=>`
-      <div>${dayData[0]}</div>
-      <input name="amount" type="number" value="${dayData[1]}">
-      ${selectTemplate(dayData)}
-    `).join('');
+function renderLosetimer(sheetId) {
+  if ("losetimer" in VERSION) {
+    show(LOSETIMER);
+    const grid = q("#losetimer").querySelector(".grid-3");
+    const selectTemplate = dayData=>`<select>${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"].map(time=>`
+        <option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>
+      `).join('')}</select>`;
+    grid.innerHTML = `<img id="loading" src="img/loading.svg">`;
+    loadSheetsApi(_=>{
+      gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
+        spreadsheetId: sheetId,
+        range: VERSION.losetimer
+      }).then(resp=>{
+        grid.innerHTML = `
+            <div>Ukedag</div>
+            <div>Antall løse studietimer</div>
+            <div>Klokkeslett ferdig</div>
+          ` + resp.result.values.map(dayData=>`
+            <div>${dayData[0]}</div>
+            <input name="amount" type="number" value="${dayData[1]}">
+            ${selectTemplate(dayData)}
+          `).join('');
+      });
+    });
+  } else show(RESULT);
 };
