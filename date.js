@@ -5,7 +5,7 @@ const formatDate = (...args)=>{
 	const data = [
 		["getFullYear", "for {} år siden"],
 		["getMonth", "for {} måned((er)) siden"],
-		["getDay", "for {} dag((er)) siden"],
+		["getDate", "for {} dag((er)) siden"],
 		["getHours", "for {} time((r)) siden"],
 		["getMinutes", "for {} minutt((er)) siden"]
 	].map(tuple=>({ method: tuple[0], text: tuple[1] }));
