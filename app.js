@@ -349,7 +349,7 @@ function clearPre() {
  */
 function showExtraFormIf(condition) {
   q("#extra-div").style.display = condition ? "block" : "none";
-  [...document.getElementsByName("show_extra")].forEach((checkbox, i) => (checkbox.checked = i == condition));
+  [...document.getElementsByName("show-extra")].forEach((checkbox, i) => (checkbox.checked = i == condition));
 }
 
 /** Listen for changes in checkbox */

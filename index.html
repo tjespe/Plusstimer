@@ -43,8 +43,8 @@
 
     <div id="extra-form">
       <h4>Har du jobbet på elevlagsmesse, åpen dag e.l.?</h4>
-      <label><input type="radio" name="show_extra" value="false" checked> Nei</label>
-      <label><input type="radio" name="show_extra" value="true" id="show-extra"> Ja</label>
+      <label><input type="radio" name="show-extra" value="false" checked> Nei</label>
+      <label><input type="radio" name="show-extra" value="true" id="show-extra"> Ja</label>
     </div>
 
     <div id="extra-div">
@@ -54,7 +54,7 @@
     </div>
 
     <menu>
-      <a id="back" class="button" style="flex:1" onclick="show(RESULT)"><</a>
+      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>
@@ -63,7 +63,7 @@
     <h3>Hvilke dager har du <u>løse</u> studietimer?</h3>
     <div class="grid-3"></div>
     <menu>
-      <a id="back" class="button" style="flex:1" onclick="show(RESULT)"><</a>
+      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>
@@ -76,7 +76,7 @@
     <img id="loading" src="img/loading.svg">
   </pre>
 
-  <script src="app.js?v=15"></script>
+  <script src="app.js?v=16"></script>
   <script src="date.js?v=2"></script>
   <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 </body>
