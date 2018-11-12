@@ -8,11 +8,14 @@ const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
 
 const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
 const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
+
+/** Displays the component with the given key if one is provided, returns an array of active components otherwise */
 const show = key=>
   key ? COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none")
       : COMPONENTS.filter(id=>q(id).style.display === "block");
 
-const VERSION = { // Info regarding the current version of the spreadsheet
+/** Info regarding the current version of the spreadsheet @type {Object} */
+const VERSION = {
   key: "tnjioe0fh34j9", // A unique identifier for the document
   title: "Plusstimer høst 2018", // The name the spreadsheet will get in the user's Drive
   template: "1xxb6kZ8qfcaK123nFBmwRFlq37ffipWKVyvXDpUdC3E", // The drive id for the template
@@ -28,9 +31,9 @@ const VERSION = { // Info regarding the current version of the spreadsheet
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Each object in this array must have three properties:
 *   {String} key        A string of random words only found in that spreadsheet
-    {String} days       The cell that contains amount of days abscence
-    {String} hours      The cell that contains amount of hours abscence
-    {String} losetimer  (Optional) Range with information about løse studietimer
+*   {String} days       The cell that contains amount of days abscence
+*   {String} hours      The cell that contains amount of hours abscence
+*   {String} losetimer  (Optional) Range with information about løse studietimer
 */
 const COMPATIBLE_VERSIONS = [{
   key: "Version sq33hhst18uu",
@@ -38,14 +41,10 @@ const COMPATIBLE_VERSIONS = [{
   hours: "E7"
 }];
 
-/**
- * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
- */
+/** Array of keywords in old and outdated spreadsheets created by this web app that should be trashed */
 const INCOMPATIBLE_VERSIONS = ["Plusstimer 2017 høst Panda Bever", "Plusstimer 2017 høst Ulv Rotte", "Plusstimer 2018 vår gfxksll"];
 
-/**
-* Check if current user has authorized this application.
-*/
+/** Check if current user has authorized this application. */
 function checkAuth() {
   const timeout = setTimeout(apiLoadErr, 3000);
   gapi.auth.authorize({
@@ -55,9 +54,7 @@ function checkAuth() {
   }, result=>(q("#authorize-div").style.display = "block", handleAuthResult(result), clearTimeout(timeout)));
 }
 
-/**
-* Initiate auth flow in response to user clicking authorize button.
-*/
+/** Initiate auth flow in response to user clicking authorize button. */
 function handleAuthClick() {
   gapi.auth.authorize(
     {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
@@ -66,9 +63,7 @@ function handleAuthClick() {
   appendPre("Autoriserer");
 }
 
-/**
-* Hide loading text
-*/
+/** Hide loading text */
 function hideLoading() {
   const qr = q("#loading");
   if (qr) qr.remove();
@@ -76,7 +71,6 @@ function hideLoading() {
 
 /**
 * Handle response from authorization server.
-*
 * @param {Object} authResult Authorization result.
 */
 function handleAuthResult(authResult) {
@@ -88,26 +82,20 @@ function handleAuthResult(authResult) {
   }
 }
 
-/**
-* Handle API load error
-*/
+/** Handle API load error */
 function apiLoadErr() {
   hideLoading();
   document.querySelectorAll("pre h4").forEach(node=>node.remove());
   appendPre("Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet.", true);
 }
 
-/**
-* Load Google Drive API library.
-*/
+/** Load Google Drive API library. */
 function loadGDriveApi() {
   appendPre("Laster inn...");
   gapi.client.load("drive", "v2", findFile);
 }
 
-/**
-* Find the right file.
-*/
+/** Find the right file. */
 function findFile() {
   appendPre("Leter etter regnearket");
   gapi.client.drive.files.list({
@@ -130,7 +118,6 @@ function findFile() {
 
 /**
 * Find ID of the right file or create a file if none exist and return ID
-*
 * @param {array} items Array of documents in user's Drive that match the search query
 */
 function getID(items) {
@@ -141,8 +128,8 @@ function getID(items) {
 
 /**
 * Load Sheets API client library.
-*
-* @param {function()} callback Function to execute after loading API.
+* @param {Function} callback Function to execute after loading API.
+* @param {Array<any>} args Arguments to send to callback function.
 */
 function loadSheetsApi(callback, ...args) {
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response=>{
@@ -150,9 +137,7 @@ function loadSheetsApi(callback, ...args) {
   });
 }
 
-/**
-* Fetch and print the data
-*/
+/** Fetch and print the data */
 function fetchAndOutputData(sheetId, autoShowForm) {
   appendPre("Laster inn plusstimer");
   if (typeof sheetId === "string") { // Validate the sheetId parameter
@@ -184,6 +169,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
   }
 }
 
+/** Get last edit date and display it in the result view */
 function displayLastEditDate(sheetId) {
   gapi.client.drive.files.get({
     fileId: sheetId
@@ -193,9 +179,7 @@ function displayLastEditDate(sheetId) {
   });
 }
 
-/**
-* Copy a spreadsheet file because no existing file was found
-*/
+/** Copy a spreadsheet file from public template because no existing file was found */
 function copyFile() {
   gapi.client.drive.files.copy({
     "fileId": VERSION.template,
@@ -207,15 +191,13 @@ function copyFile() {
   });
 }
 
-/**
-* Get data from old compatible spreadsheet and insert it into the new one
-*/
+/** Get data from old compatible spreadsheet and insert it into the new one */
 function copyDataFromOldSheet (newSheetId) {
   appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
     "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or ")
-  }).execute(resp=>{ // Handle response
-    if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
+  }).execute(resp=>{
+    if (!resp.error) { // Stop if an error occurs
       const oldSheet = resp.items.find(item=>item.mimeType === MIME && !item.labels.trashed);
       if (oldSheet) {
         appendPre("Fant et gammelt regneark");
@@ -235,13 +217,12 @@ function copyDataFromOldSheet (newSheetId) {
           });
         });
       } else renderLosetimer(newSheetId);
-    }
+    } else renderLosetimer(newSheetId);
   });
 }
 
 /**
  * Move a file to the trash.
- *
  * @param {String} fileId ID of the file to trash.
  */
 function trashFile(fileId) {
@@ -251,9 +232,7 @@ function trashFile(fileId) {
   });
 }
 
-/**
- * Move all outdated files to trash
- */
+/** Move all outdated files to trash */
 function trashIncompatibles() {
   INCOMPATIBLE_VERSIONS.forEach(version=>{
     gapi.client.drive.files.list({ // Query user's Drive
@@ -264,7 +243,6 @@ function trashIncompatibles() {
 
 /*
 * Update spreadsheet
-*
 * @param {string|number} days Amount of days abscence
 * @param {string|number} preset_hours Amount of hours abscence
 * @param {string|number} extra Extra school hours worked
@@ -291,9 +269,7 @@ function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   }
 }
 
-/**
- * Handle update form submission
- */
+/** Handle update form submission */
 function setEventListener(sheetId) {
   q("form").onsubmit = event=>{
     event.preventDefault();
@@ -311,9 +287,7 @@ function appendPre(message, error) {
   q("pre").innerHTML += `<h4 ${error ? `class="error"` : ``}>${message}</h4>`;
 }
 
-/**
- * Clears the pre element
- */
+/** Clears the pre element */
 function clearPre() {
   q("pre").innerHTML = "";
   q("pre").style.paddingTop = "40px";
@@ -334,9 +308,7 @@ function showExtraFormIf(condition) {
   showExtraFormIf(q("#show-extra").checked);
 }));
 
-/**
- * Render form that allows user to set when their løse studietimer is
- */
+/** Render form that allows user to set when their løse studietimer is */
 function renderLosetimer(sheetId) {
   if ("losetimer" in VERSION) {
     show(LOSETIMER);
