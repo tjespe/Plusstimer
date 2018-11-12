@@ -101,7 +101,7 @@ function apiLoadErr() {
 * Load Google Drive API library.
 */
 function loadGDriveApi() {
-  appendPre("Laster inn viktige filer");
+  appendPre("Laster inn...");
   gapi.client.load("drive", "v2", findFile);
 }
 
@@ -145,7 +145,6 @@ function getID(items) {
 * @param {function()} callback Function to execute after loading API.
 */
 function loadSheetsApi(callback, ...args) {
-  appendPre("Laster inn flere viktige filer");
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response=>{
     args.length ? callback(...args) : callback(response);
   });
