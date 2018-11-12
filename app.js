@@ -109,7 +109,7 @@ function loadGDriveApi() {
 * Find the right file.
 */
 function findFile() {
-  appendPre("Finner regnearket");
+  appendPre("Leter etter regnearket");
   gapi.client.drive.files.list({
     "q": "fullText contains '"+VERSION.key+"'"
   }).execute(resp=>{
