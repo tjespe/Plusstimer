@@ -228,7 +228,8 @@ function copyDataFromOldSheet (newSheetId) {
               spreadsheetId: oldSheet.id,
               range: COMPATIBLE_VERSIONS[0].hours,
             }).then(hours_response=>{
-              updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0]); // Update the new sheet with the variables from the old sheet
+              updateSheet(newSheetId, days_response.result.values[0][0], hours_response.result.values[0][0], "" // Update the new sheet with the variables from the old sheet
+                , true); // Auto show form for updating lose timer TODO: get lose timer from old sheet
               trashFile(oldSheet.id); // Move the old file to the trash
             });
           });
@@ -268,7 +269,7 @@ function trashIncompatibles() {
 * @param {string|number} preset_hours Amount of hours abscence
 * @param {string|number} extra Extra school hours worked
 */
-function updateSheet(sheetId, days, hours, extra) {
+function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   clearPre();
   q("form").style.display = "none";
   if (days && hours) {
@@ -283,7 +284,7 @@ function updateSheet(sheetId, days, hours, extra) {
       valueInputOption: "USER_ENTERED",
       values: values
     }).then(resp=>{
-      fetchAndOutputData(sheetId, false);
+      fetchAndOutputData(sheetId, autoShowForm);
     });
   } else {
     show(UPDATE);
