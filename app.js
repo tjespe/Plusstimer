@@ -69,7 +69,6 @@ function checkAuth() {
 /** Initiate auth flow in response to user clicking authorize button. */
 function handleAuthClick() {
   gapi.auth.authorize({ client_id: CLIENT_ID, scope: SCOPES, immediate: false }, handleAuthResult);
-  appendPre("Autoriserer");
 }
 
 /** Hide loading text */
