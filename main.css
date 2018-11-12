@@ -179,8 +179,8 @@ menu > *:focus {
   display: block;
   width: 62vw;
   max-width: 100%;
-  min-height: 14px;
-  font-size: small;
+  min-height: 11px;
+  font-size: 11px;
 }
 
 /** Loading animation */

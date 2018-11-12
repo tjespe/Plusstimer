@@ -189,7 +189,7 @@ function displayLastEditDate(sheetId) {
     fileId: sheetId
   }).execute(resp=>{
     const dateStr = resp.modifiedDate;
-    q("#last-update").innerText = `Sist oppdatert ${formatDate(dateStr)}.`;
+    q("#last-update").innerText = `(Sist endret ${formatDate(dateStr)})`;
   });
 }
 
