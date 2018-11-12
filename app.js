@@ -3,26 +3,40 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.goo
 const MIME = "application/vnd.google-apps.spreadsheet";
 
 const q = s=>document.querySelector(s); // Quickly select HTML elements using a CSS selector
+const range = N=>Array(N).fill().map((_, i) => i);
+const weekdays = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
+
+const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
+const [ RESULT, UPDATE, LOSETIMER, OUTPUT ] = COMPONENTS;
+const show = key=>
+  key ? COMPONENTS.forEach(id=>q(id).style.display = key === id ? "block" : "none")
+      : COMPONENTS.filter(id=>q(id).style.display === "block");
 
 const VERSION = { // Info regarding the current version of the spreadsheet
-  key: "Version sq33hhst18uu", // A unique identifier for the document
+  key: "tnjioe0fh34j9", // A unique identifier for the document
   title: "Plusstimer høst 2018", // The name the spreadsheet will get in the user's Drive
-  template: "13npTQiU_dpShq4TjTAWu7Em5NyAUEjebio-1C-T263Q", // The drive id for the template
+  template: "1xxb6kZ8qfcaK123nFBmwRFlq37ffipWKVyvXDpUdC3E", // The drive id for the template
   range: "Plusstimer!D7:G7", // The range where days, hours and plusstimer can be found (include name of sheet if more than one sheet in spreadsheet)
   days: [0,0], // The vertical and horizontal position of days in the range, respectively
   hours: [0,1], // The vertical and horizontal position of hours in the range, respectively
   extra: [0,2], // The vertical and horizontal position of extra hours in the range, respectively
-  plusstimer: [0,3]  // The vertical and horizontal position of plusstimer in the range, respectively
+  plusstimer: [0,3],  // The vertical and horizontal position of plusstimer in the range, respectively
+  losetimer: "Plusstimer!L16:O20" // The range with information about løse studietimer
 };
 
 /**
 * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
 * Each object in this array must have three properties:
-*   {String} key   A string of random words only found in that spreadsheet
-    {String} days  The cell that contains amount of days abscence
-    {String} hours The cell that contains amount of hours abscence
+*   {String} key        A string of random words only found in that spreadsheet
+    {String} days       The cell that contains amount of days abscence
+    {String} hours      The cell that contains amount of hours abscence
+    {String} losetimer  (Optional) Range with information about løse studietimer
 */
-const COMPATIBLE_VERSIONS = [];
+const COMPATIBLE_VERSIONS = [{
+  key: "Version sq33hhst18uu",
+  days: "D7",
+  hours: "E7"
+}];
 
 /**
  * Array of keywords in old and outdated spreadsheets created by this web app that should be trashed
@@ -56,7 +70,8 @@ function handleAuthClick() {
 * Hide loading text
 */
 function hideLoading() {
-  if (q("#loading")) q("#loading").remove();
+  const qr = q("#loading");
+  if (qr) qr.remove();
 }
 
 /**
@@ -86,7 +101,7 @@ function apiLoadErr() {
 * Load Google Drive API library.
 */
 function loadGDriveApi() {
-  appendPre("Laster inn viktige filer");
+  appendPre("Laster inn...");
   gapi.client.load("drive", "v2", findFile);
 }
 
@@ -94,7 +109,7 @@ function loadGDriveApi() {
 * Find the right file.
 */
 function findFile() {
-  appendPre("Finner regnearket");
+  appendPre("Leter etter regnearket");
   gapi.client.drive.files.list({
     "q": "fullText contains '"+VERSION.key+"'"
   }).execute(resp=>{
@@ -130,7 +145,6 @@ function getID(items) {
 * @param {function()} callback Function to execute after loading API.
 */
 function loadSheetsApi(callback, ...args) {
-  appendPre("Laster inn flere viktige filer");
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response=>{
     args.length ? callback(...args) : callback(response);
   });
@@ -146,30 +160,37 @@ function fetchAndOutputData(sheetId, autoShowForm) {
       spreadsheetId: sheetId,
       range: VERSION.range
     }).then(response=>{  // Handle successful response
-      appendPre("Lasting fullført.");
       const range = response.result;
       if (range.values.length > 0) { // Validate response and print result
+        clearPre();
+        if (!autoShowForm) show(RESULT);
         const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(key=>range.values[VERSION[key][0]][VERSION[key][1]]);
         q("#result>.number").innerHTML = plusstimer;
-        q("#result-wrapper").style.display = "flex";
-        q("#caption>a").innerText = "Jeg har ikke "+days+" dager og "+hours+" timer fravær. Oppdater";
-        q("pre").style.display = "none";
-        q("form")[0].value = days;
-        q("form")[1].value = hours;
-        q("form")[2].value = extra;
-        q("#doc-link").href = "https://docs.google.com/spreadsheets/d/"+sheetId;
-        console.log(extra, extra > 0);
+        q("#update")[0].value = days;
+        q("#update")[1].value = hours;
+        q("#update")[2].value = extra;
+        q("#last-update").innerText = "";
         showExtraFormIf(extra > 0);
+        displayLastEditDate(sheetId);
       } else { // Handle unsuccessful validation of response
         appendPre("Fant ingen data.", true);
       }
-      if (autoShowForm) showUpdateForm();
+      if (autoShowForm) renderLosetimer(sheetId);
     }, response=>{ // Handle erroneous response
       appendPre("Feil: " + response.result.error.message, true);
     });
   } else {  // Handle unsuccessful validation of the sheetId variable (this should never happen, but the user should get an explanation if it does)
     appendPre("Something went wrong, refresh the page and try again", true);
   }
+}
+
+function displayLastEditDate(sheetId) {
+  gapi.client.drive.files.get({
+    fileId: sheetId
+  }).execute(resp=>{
+    const dateStr = resp.modifiedDate;
+    q("#last-update").innerText = `Sist oppdatert ${formatDate(dateStr)}.`;
+  });
 }
 
 /**
@@ -181,7 +202,7 @@ function copyFile() {
     "resource": {"title": VERSION.title}
   }).execute(resp=>{
     if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-    loadSheetsApi(()=>fetchAndOutputData(resp.id, COMPATIBLE_VERSIONS.length === 0));
+    loadSheetsApi(()=>fetchAndOutputData(resp.id, true));
     setEventListener(resp.id);
   });
 }
@@ -192,8 +213,7 @@ function copyFile() {
 function copyDataFromOldSheet (newSheetId) {
   appendPre("Prøver å finne et gammelt regneark");
   gapi.client.drive.files.list({ // Query user's Drive
-    "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or "),
-    "orderBy": "createdDate desc"
+    "q": COMPATIBLE_VERSIONS.map(v=>`fullText contains "${v.key}"`).join(" or ")
   }).execute(resp=>{ // Handle response
     if (!resp.error) { // Stop if an error occurs, but just ignore it because it is not impotant
       const oldSheet = resp.items.find(item=>item.mimeType === MIME && !item.labels.trashed);
@@ -213,7 +233,7 @@ function copyDataFromOldSheet (newSheetId) {
             });
           });
         });
-      } else showUpdateForm();
+      } else renderLosetimer(newSheetId);
     }
   });
 }
@@ -266,19 +286,8 @@ function updateSheet(sheetId, days, hours, extra) {
       fetchAndOutputData(sheetId, false);
     });
   } else {
-    showUpdateForm();
+    show(UPDATE);
   }
-}
-
-/**
- * Show the update form
- * @param {optional} hide  If present and truthy, the form will be hidden instead of shown
- * @param {object}   event Click event object
- */
-function showUpdateForm(hide, event) {
-  if (event) event.preventDefault();
-  q("form").style.display = hide ? "none" : "block";
-  q("#result-wrapper").style.display = hide ? "flex" : "none";
 }
 
 /**
@@ -319,6 +328,37 @@ function showExtraFormIf(condition) {
   [...document.getElementsByName("show_extra")].forEach((checkbox, i)=>checkbox.checked = i == condition);
 }
 
+/** Listen for changes in checkbox */
 ["click", "keyup"].forEach(e=>q("#extra-form").addEventListener(e, event=>{
   showExtraFormIf(q("#show-extra").checked);
 }));
+
+/**
+ * Render form that allows user to set when their løse studietimer is
+ */
+function renderLosetimer(sheetId) {
+  if ("losetimer" in VERSION) {
+    show(LOSETIMER);
+    const grid = q("#losetimer").querySelector(".grid-3");
+    const selectTemplate = dayData=>`<select>${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"].map(time=>`
+        <option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>
+      `).join('')}</select>`;
+    grid.innerHTML = `<img id="loading" src="img/loading.svg">`;
+    loadSheetsApi(_=>{
+      gapi.client.sheets.spreadsheets.values.get({  // Get the range of cells from the spreadsheet
+        spreadsheetId: sheetId,
+        range: VERSION.losetimer
+      }).then(resp=>{
+        grid.innerHTML = `
+            <div>Ukedag</div>
+            <div>Antall løse studietimer</div>
+            <div>Klokkeslett ferdig</div>
+          ` + resp.result.values.map(dayData=>`
+            <div>${dayData[0]}</div>
+            <input name="amount" type="number" value="${dayData[1]}">
+            ${selectTemplate(dayData)}
+          `).join('');
+      });
+    });
+  } else show(RESULT);
+};

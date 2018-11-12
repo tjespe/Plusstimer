@@ -23,18 +23,20 @@ h4, h6 {
 a {
   color: #337ab7;
 }
-input[type="text"], [type="submit"], pre, info, .button {
+input[type="text"], input[type="number"], select, [type="submit"], pre, info, .button {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: inherit;
   font-family: inherit;
   padding: 5px;
   box-shadow: 0 1px 2px #ccc;
-  max-width: calc(210px + 64px);
-  width: calc(62vw + 64px);
   background: #fff;
   color: inherit;
+}
+input[type="text"], [type="submit"], pre, info, .button {
   -webkit-appearance: none;
+  width: calc(62vw + 64px);
+  max-width: calc(210px + 64px);
 }
 pre {
   white-space: pre-line;
@@ -49,6 +51,16 @@ pre {
 }
 #extra-div {
   display: none;
+}
+.grid-3 {
+  display: grid;
+  grid-template-areas: ". . .";
+  grid-gap: 10px;
+  grid-template-columns: 20% 40% 33%;
+}
+.grid-3 > * {
+  display: flex;
+  align-items: center;
 }
 
 /** Input information boxes */
@@ -106,7 +118,7 @@ form:invalid>input[type="submit"], input:invalid {
   background: #f2dede;
   border-color: #a94442;
 }
-form#update {
+form#update, form#losetimer {
   max-width: calc(210px + 74px);
   width: calc(62vw + 74px);
   display: none;
@@ -133,18 +145,24 @@ menu > *:focus {
 }
 
 /** Result display */
-#result-wrapper {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+#result-view {
   display: none;
 }
-#result {
+#result-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+#result-wrapper > div {
   width: 62vw;
-  height: 65vw;
   max-width: 210px;
-  max-height: 180px;
   margin: 5px;
+}
+#result {
+  height: 65vw;
+  max-height: 180px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
@@ -160,14 +178,23 @@ menu > *:focus {
 .caption {
   width: 62vw;
   max-width:274px;
+  min-height: 14px;
   font-size: small;
 }
 
 /** Loading animation */
 @keyframes spin {0% {transform: rotate(45deg)}17% {transform: rotate(300deg)}34% {transform: rotate(90deg)}51% {transform: rotate(450deg)}66% {transform: rotate(135deg)}83% {transform: rotate(495deg)}100% {transform: rotate(405deg)}}
 #loading {
-  margin-bottom: -50px;
   animation: spin 5s infinite;
+}
+#output #loading {
+  margin-bottom: -50px;
+}
+#losetimer #loading {
+  margin: 0 20px;
+}
+pre:empty {
+  display: none;
 }
 pre h4:last-child::after {
   animation: spin 5s infinite;

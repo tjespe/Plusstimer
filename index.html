@@ -19,22 +19,26 @@
   <link rel="icon" href="img/favicon.png">
 </head>
 <body>
-  <div id="result-wrapper">
-    <div class="caption warning">NB! Hvis du ikke går i tredjeklasse må du endre på <a id="doc-link" target="_blank">denne tabellen</a></div>
-    <div id="result">
-      <div class="number"></div>
-      <span class="description">plusstimer</span>
+  <div id="result-view">
+    <div id="result-wrapper">
+      <div id="result">
+        <div class="number"></div>
+        <span class="description">plusstimer</span>
+      </div>
+      <div href="#" onclick="show(UPDATE)" class="button">
+        Oppdater fravær
+      </div>
+      <span class="caption" id="last-update"></span>
     </div>
-    <div id="caption" class="caption"><a href onclick="showUpdateForm(false, event)">Klikk her for å oppdatere fravær</a></div>
   </div>
 
   <form id="update">
     <h4>Hvor mange dager fravær har du på skolearena?</h4>
-    <input type="text" name="days" required="true">
+    <input type="text" name="days" required="true" autocomplete="off">
     <info>Skriv hele dager direkte fra skolearena<br><img src="https://i.snag.gy/RLUAui.jpg"></info>
 
     <h4>Hvor mange klokketimer fravær har du på skolearena?</h4>
-    <input type="text" name="hours" required="true">
+    <input type="text" name="hours" required="true" autocomplete="off">
     <info>Skriv hele klokketimer (60 min) direkte fra skolearena<br><img src="https://i.snag.gy/deH0i2.jpg"></info>
 
     <div id="extra-form">
@@ -45,12 +49,21 @@
 
     <div id="extra-div">
       <h4>Hvor mange ekstratimer har du fått?</h4>
-      <input type="text" name="extra" placeholder="0">
+      <input type="text" name="extra" placeholder="0" autocomplete="off">
       <info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info>
     </div>
 
     <menu>
-      <a id="back" class="button" style="flex:1" onclick="showUpdateForm(true, event)"><</a>
+      <a id="back" class="button" style="flex:1" onclick="show(RESULT)"><</a>
+      <input type="submit" value="Send inn" style="flex:10">
+    </menu>
+  </form>
+
+  <form id="losetimer">
+    <h3>Hvilke dager har du <u>løse</u> studietimer?</h3>
+    <div class="grid-3"></div>
+    <menu>
+      <a id="back" class="button" style="flex:1" onclick="show(RESULT)"><</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>
@@ -58,12 +71,13 @@
   <pre id="output">
     <div id="authorize-div">
       <span>Du må autorisere med Google Disk fordi regnearket blir lagret på din Disk</span>
-      <button onclick="handleAuthClick(event)">Autoriser</button>
+      <button onclick="handleAuthClick(event)" class="button" style="max-width: 150px; margin-top: 20px">Autoriser</button>
     </div>
     <img id="loading" src="img/loading.svg">
   </pre>
 
   <script src="app.js?v=14"></script>
+  <script src="date.js?v=1"></script>
   <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
 </body>
 </html>
