@@ -295,9 +295,8 @@ function trashIncompatibles() {
  */
 function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   clearPre();
-  q("form").style.display = "none";
   if (days && hours) {
-    q("pre").style.display = "block";
+    show(OUTPUT);
     const values = [];
     ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]] = []));
     ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]][VERSION[key][1]] = eval(key)));
@@ -319,9 +318,8 @@ function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
 
 /** Handle update form submission */
 function setEventListener(sheetId) {
-  q("form").onsubmit = event => {
+  q(UPDATE).onsubmit = event => {
     event.preventDefault();
-    const children = event.target.children;
     updateSheet(sheetId, ...["days", "hours", "extra"].map(key => document.getElementsByName(key)[0].value));
   };
 }
@@ -362,13 +360,29 @@ function showExtraFormIf(condition) {
 function renderLosetimer(sheetId) {
   if ("losetimer" in VERSION) {
     show(LOSETIMER);
-    const grid = q("#losetimer").querySelector(".grid-3");
-    const selectTemplate = dayData =>`<select>
+    const form = q(LOSETIMER);
+    form.onsubmit = event=>{
+      event.preventDefault();
+      const values = range(5).map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText));
+      loadSheetsApi(_ => {
+        gapi.client.sheets.spreadsheets.values
+          .update({
+            spreadsheetId: sheetId,
+            range: VERSION.losetimer,
+            valueInputOption: "USER_ENTERED",
+            values: values,
+          })
+          .then(updateSheet);
+      });
+    };
+    const grid = form.querySelector(".grid-3");
+    const selectTemplate = (dayData, i) =>`<select key="${i}">
       ${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"]
         .map(time => `<option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time}</option>`)
         .join("")}
       </select>`;
     grid.innerHTML = `<img id="loading" src="img/loading.svg">`;
+    grid.setAttribute("sheetId", sheetId);
     loadSheetsApi(_ => {
       gapi.client.sheets.spreadsheets.values
         .get({
@@ -381,10 +395,10 @@ function renderLosetimer(sheetId) {
               <div>Antall løse studietimer</div>
               <div>Klokkeslett ferdig</div> ` +
             resp.result.values
-              .map(dayData => `
-                <div>${dayData[0]}</div>
-                <input name="amount" type="number" value="${dayData[1]}">
-                ${selectTemplate(dayData)}`
+              .map((dayData, i) => `
+                <div key="${i}">${dayData[0]}</div>
+                <input key="${i}" name="amount" type="number" value="${dayData[1]}">
+                ${selectTemplate(dayData, i)}`
               ).join("");
         });
     });
