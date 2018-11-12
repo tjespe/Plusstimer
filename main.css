@@ -178,6 +178,7 @@ menu > *:focus {
 .caption {
   width: 62vw;
   max-width:274px;
+  min-height: 14px;
   font-size: small;
 }
 
