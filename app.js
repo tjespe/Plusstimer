@@ -55,7 +55,7 @@ const INCOMPATIBLE_VERSIONS = [
 
 /** Check if current user has authorized this application. */
 function checkAuth() {
-  const timeout = setTimeout(apiLoadErr, 3000);
+  const timeout = setTimeout(apiLoadErr, 5000);
   gapi.auth.authorize(
     {
       client_id: CLIENT_ID,
@@ -92,10 +92,8 @@ function handleAuthResult(authResult) {
 
 /** Handle API load error */
 function apiLoadErr() {
-  hideLoading();
-  document.querySelectorAll("pre h4").forEach(node => node.remove());
   appendPre(
-    "Det virker som om det er noe galt. Hvis du er på skole-PC kan du prøve å bruke mobilen eller en annen PC i stedet.",
+    "Det virker som om det er noe galt. Prøv å bruke mobilen eller en annen PC.",
     true
   );
 }
@@ -336,7 +334,6 @@ function appendPre(message, error) {
 /** Clears the pre element */
 function clearPre() {
   q("pre").innerHTML = "";
-  q("pre").style.paddingTop = "40px";
 }
 
 /**

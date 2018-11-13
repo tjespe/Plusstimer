@@ -38,16 +38,9 @@ input[type="text"], [type="submit"], pre, info, .button {
   width: calc(62vw + 64px);
   max-width: calc(210px + 64px);
 }
-pre {
-  white-space: pre-line;
-  padding-top: 0;
-  padding-bottom: 55px;
-  margin: auto;
-}
 #authorize-div {
   display: none;
   margin-top: 30px;
-  margin-bottom: -50px;
 }
 #extra-div {
   display: none;
@@ -188,14 +181,21 @@ menu > *:focus {
 #loading {
   animation: spin 5s infinite;
 }
-#output #loading {
-  margin-bottom: -50px;
-}
 #losetimer #loading {
   margin: 0 20px;
 }
+
+/** Output view */
+pre {
+  white-space: pre-line;
+  padding: 20px;
+  margin: auto;
+}
 pre:empty {
   display: none;
+}
+pre h4:last-child {
+  margin-bottom: 25px;
 }
 pre h4:last-child::after {
   animation: spin 5s infinite;
