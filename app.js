@@ -10,7 +10,7 @@ const range = N => Array(N).fill().map((_, i) => i);
 /** @type {Array} CSS selectors for all the components (elements that should not be visible at the same time) */
 const COMPONENTS = ["#result-view", "form#update", "form#losetimer", "pre#output"];
 /** Make all component selectors available as constants */
-const [RESULT, UPDATE, LOSETIMER, OUTPUT] = COMPONENTS;
+const [RESULT, UPDATE, LOSETIMER, PRE] = COMPONENTS;
 /** Displays the component with the given key if one is provided, returns an array of active components otherwise */
 const show = key =>
   key
@@ -71,10 +71,27 @@ function handleAuthClick() {
   gapi.auth.authorize({ client_id: CLIENT_ID, scope: SCOPES, immediate: false }, handleAuthResult);
 }
 
-/** Hide loading text */
+
+/**
+ * Append text to the pre element containing the given message.
+ * @param {string} message Text to be placed in pre element.
+ * @param {boolean} error Whether or not the message is an error
+ */
+function appendPre(message, error) {
+  q("pre").innerHTML += `<h4 ${error ? `class="error"` : ``}>${message}</h4>`;
+}
+/** Clears the pre element */
+function clearPre() {
+  q("pre").innerHTML = "";
+}/** Removes loading icon */
 function hideLoading() {
   const qr = q("#loading");
   if (qr) qr.remove();
+}
+/** Clears the pre element and adds a loading icon to it */
+function showLoading() {
+  show(PRE);
+  q(PRE).innerHTML = `<img id="loading" src="img/loading.svg">`;
 }
 
 /**
@@ -182,7 +199,7 @@ function fetchAndOutputData(sheetId, autoShowForm) {
           // Handle unsuccessful validation of response
           appendPre("Fant ingen data.", true);
         }
-        if (autoShowForm) renderLosetimer(sheetId);
+        if (autoShowForm) renderLosetimer(sheetId, true);
       })
       .catch(response => {
         appendPre("Feil: " + response.result.error.message, true);
@@ -258,8 +275,8 @@ function copyDataFromOldSheet(newSheetId) {
                   });
               });
           });
-        } else renderLosetimer(newSheetId);
-      } else renderLosetimer(newSheetId);
+        } else renderLosetimer(newSheetId, true);
+      } else renderLosetimer(newSheetId, true);
     });
 }
 
@@ -299,7 +316,7 @@ function trashIncompatibles() {
 function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   clearPre();
   if (days && hours) {
-    show(OUTPUT);
+    show(PRE);
     const values = [];
     ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]] = []));
     ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]][VERSION[key][1]] = eval(key)));
@@ -328,20 +345,6 @@ function setEventListener(sheetId) {
 }
 
 /**
- * Append text to the pre element containing the given message.
- * @param {string} message Text to be placed in pre element.
- * @param {boolean} error Whether or not the message is an error
- */
-function appendPre(message, error) {
-  q("pre").innerHTML += `<h4 ${error ? `class="error"` : ``}>${message}</h4>`;
-}
-
-/** Clears the pre element */
-function clearPre() {
-  q("pre").innerHTML = "";
-}
-
-/**
  * If condition is true: shows the extra form, checks the "Yes" box and unchecks the "No" box.
  * Otherwise: the opposite happens.
  * @param  {boolean} Whether or not the extra form should be shown
@@ -359,7 +362,7 @@ function showExtraFormIf(condition) {
 );
 
 /** Render form that allows user to set when their løse studietimer is */
-function renderLosetimer(sheetId) {
+function renderLosetimer(sheetId, updateSheetAfterwards = false) {
   if ("losetimer" in VERSION) {
     show(LOSETIMER);
     const form = q(LOSETIMER);
@@ -369,6 +372,7 @@ function renderLosetimer(sheetId) {
         .map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText))
         .map(arr=>[arr[0], arr[1], ...arr[2].split(':')]);
       loadSheetsApi(_ => {
+        showLoading();
         gapi.client.sheets.spreadsheets.values
           .update({
             spreadsheetId: sheetId,
@@ -376,7 +380,7 @@ function renderLosetimer(sheetId) {
             valueInputOption: "USER_ENTERED",
             values: values,
           })
-          .then(updateSheet);
+          .then(_=>show(updateSheetAfterwards ? UPDATE : RESULT));
       });
     };
     const grid = form.querySelector(".grid-3");
