@@ -117,6 +117,9 @@ form#update, form#losetimer {
   display: none;
   margin: auto;
 }
+form#losetimer [key] {
+  font-weight: 100;
+}
 
 /** Menu */
 menu {
