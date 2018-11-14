@@ -30,9 +30,6 @@ const VERSION = {
   losetimer: "Plusstimer!L16:O20", // The range with information about løse studietimer
 };
 
-/** Delete link to losetimer form */
-if (!VERSION.hasOwnProperty("losetimer")) q("#loseLink").remove();
-
 /**
  * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
  * Each object in this array must have three properties:
@@ -121,6 +118,11 @@ function findFile() {
         if (sheetId) {
           loadSheetsApi(fetchAndOutputData, sheetId, false);
           setEventListener(sheetId);
+          if ("losetimer" in VERSION) {
+            const link = q("#loselink");
+            link.style.display = "block";
+            link.querySelector("a").onClick = e=>(e.preventDefault(), renderLosetimer(sheetId));
+          }
         }
       } else if (resp.error.code == 401) {
         checkAuth(); // Access token might have expired.
