@@ -365,7 +365,9 @@ function renderLosetimer(sheetId) {
     const form = q(LOSETIMER);
     form.onsubmit = event=>{
       event.preventDefault();
-      const values = range(5).map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText));
+      const values = range(5)
+        .map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText))
+        .map(arr=>[arr[0], arr[1], ...arr[2].split(':')]);
       loadSheetsApi(_ => {
         gapi.client.sheets.spreadsheets.values
           .update({
