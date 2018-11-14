@@ -186,9 +186,6 @@ menu > *:focus {
 #loading {
   animation: spin 5s infinite;
 }
-#losetimer #loading {
-  margin: 0 20px;
-}
 
 /** Output view */
 pre {
