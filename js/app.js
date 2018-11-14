@@ -166,7 +166,7 @@ function getID(items) {
 /**
  * Load Sheets API client library.
  * @param {Function} callback Function to execute after loading API.
- * @param {Array<any>} args Arguments to send to callback function.
+ * @param {...any} args Arguments to send to callback function.
  */
 function loadSheetsApi(callback, ...args) {
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response => {

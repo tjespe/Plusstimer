@@ -1,84 +1,40 @@
-<!doctype html>
-<html>
-<head>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-69446843-11"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
+<!doctype html><html><head><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-69446843-11"></script><script>window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'UA-69446843-11');
-  </script>
-  <title>Plusstimer</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" type="text/css" href="css/main.css?v=1">
-  <link rel="apple-touch-icon" href="img/app-icon.png" />
-  <link rel="icon" href="img/favicon.png">
-</head>
-<body>
-  <div id="result-view">
-    <div id="result-wrapper">
-      <span class="caption-b" id="loselink" style="display: none">Hvis du ikke allerede har gjort det, bør du <a href="#">sjekke at tabellen din for løse studietimer er riktig</a>.</span>
-      <div id="result">
-        <div class="number"></div>
-        <span class="description">plusstimer</span>
-      </div>
-      <div href="#" onclick="show(UPDATE)" class="button">
-        <div>Oppdater fravær</div>
-        <span class="caption-s" id="last-update"></span>
-      </div>
-    </div>
-  </div>
-
-  <form id="update">
-    <h4>Hvor mange dager fravær har du på skolearena?</h4>
-    <input type="text" name="days" required="true" autocomplete="off">
-    <info>Skriv hele dager direkte fra skolearena<br><img src="https://i.snag.gy/RLUAui.jpg"></info>
-
-    <h4>Hvor mange klokketimer fravær har du på skolearena?</h4>
-    <input type="text" name="hours" required="true" autocomplete="off">
-    <info>Skriv hele klokketimer (60 min) direkte fra skolearena<br><img src="https://i.snag.gy/deH0i2.jpg"></info>
-
-    <div id="extra-form" class="no-overlay">
-      <h4>Har du jobbet på elevlagsmesse, åpen dag e.l.?</h4>
-      <label><input type="radio" name="show-extra" value="false" checked> Nei</label>
-      <label><input type="radio" name="show-extra" value="true" id="show-extra"> Ja</label>
-    </div>
-
-    <div id="extra-div">
-      <h4>Hvor mange ekstratimer har du fått?</h4>
-      <input type="text" name="extra" placeholder="0" autocomplete="off">
-      <info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info>
-    </div>
-
-    <menu>
-      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
-      <input type="submit" value="Send inn" style="flex:10">
-    </menu>
-  </form>
-
-  <form id="losetimer">
-    <h3>Hvilke dager har du <u>løse</u> studietimer?</h3>
-    <div class="grid-3"></div>
-    <menu>
-      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
-      <input type="submit" value="Send inn" style="flex:10">
-    </menu>
-  </form>
-
-  <pre id="output">
+    gtag('config', 'UA-69446843-11');</script><title>Plusstimer</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0"><meta name="apple-mobile-web-app-capable" content="yes"><style>html{min-height:100%;display:flex}body{min-width:100%;display:flex;margin:0;justify-content:center;text-align:center;font-family:ubuntu,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"}h4{margin-bottom:5px}h6{margin-top:5px}h4,h6 {font-weight:300}a{color:#337ab7}input[type="text"],input[type="number"],select,[type="submit"]{border-radius:5px;border:1px solid #ccc;font-size:inherit;font-family:inherit;padding:5px;box-shadow:0 1px 2px #ccc;background:#fff;color:inherit}pre{border-radius:5px;border:1px solid #ccc;font-size:inherit;font-family:inherit;box-shadow:0 1px 2px #ccc;background:#fff;color:inherit}info{border-radius:5px;border:1px solid #ccc;font-size:inherit;font-family:inherit;padding:5px;box-shadow:0 1px 2px #ccc;color:inherit}.button{border-radius:5px;border:1px solid #ccc;font-size:inherit;font-family:inherit;padding:5px;box-shadow:0 1px 2px #ccc;background:#fff;color:inherit}input[type="text"],[type="submit"],pre,info,.button{-webkit-appearance:none;width:calc(62vw + 64px);max-width:calc(210px + 64px)}#authorize-div{display:none;margin-top:30px}#extra-div{display:none}.grid-3{display:grid;grid-template-areas:". . .";grid-gap:10px;grid-template-columns:20% 40% 33%}.grid-3>*{display:flex;align-items:center}.no-overlay{-webkit-tap-highlight-color:rgba(0,0,0,0)}info{position:absolute;margin:20px 0 0 -142.5px;font-weight:100;font-style:oblique;z-index:-100;opacity:0;transition:opacity .15s;background:aliceblue}info:before{content:" ";background:#ccc;height:24px;width:2px;top:-24px;position:absolute}@media screen and (min-width:930px){info{margin:-32px 0 0 160px}info:before{width:16px;height:2px;left:-17px;top:initial}}@media screen and (max-width:929px){info+*,info+*+*,info+*+*+*,info+*+*+*+*{transition:opacity .15s}input:focus+info+*,input:focus+info+*+*,input:focus+info+*+*+*,input:focus+info+*+*+*+*{opacity:0}}input:focus+info{z-index:1000;opacity:1}form:valid>input[type="submit"],.button{cursor:pointer}form:valid>input[type="submit"]:active,.button:active{background:#ccc}form:invalid>input[type="submit"],input:invalid{color:#a94442;background:#f2dede;border-color:#a94442}form#update{max-width:284px;width:calc(62vw + 74px);display:none;margin:auto}form#losetimer{width:calc(62vw + 74px);display:none;margin:auto;max-width:335px}form#losetimer [key]{font-weight:100}menu{display:flex;padding:0;margin-top:20px}menu>*{margin-right:5px}menu>*:last-child{margin-right:0}menu>*:active{background:#ddd}menu>*:focus{outline:0}#result-view{display:none}#result-wrapper{align-items:center;display:flex;flex-direction:column;height:100%;justify-content:center}#result-wrapper>div{width:62vw;max-width:210px;margin:5px}#result{height:65vw;max-height:180px;border-radius:10px;background-color:rgba(0,0,0,0.8);color:white;padding:2em;box-shadow:0 2px 14px #aaa}.number{font-size:130px}.description{font-size:1.75em}.caption-s{display:block;width:62vw;max-width:100%;min-height:12px;font-size:11px}.caption-b{max-width:270px;padding:5px;font-size:12px}@keyframes spin{0%{transform:rotate(45deg)}17%{transform:rotate(300deg)}34%{transform:rotate(90deg)}51%{transform:rotate(450deg)}66%{transform:rotate(135deg)}83%{transform:rotate(495deg)}to{transform:rotate(405deg)}}#loading{animation:spin 5s infinite}pre{white-space:pre-line;padding:20px;margin:auto}pre:empty{display:none}pre h4:last-child{margin-bottom:25px}pre h4:last-child::after{animation:spin 5s infinite;background-image:url(/img/loading.svg);background-size:contain;content:" ";display:inline-block;height:1em;margin-left:1em;width:1em}pre h4.error::after{content:none}</style><link rel="apple-touch-icon" href="img/app-icon.png"><link rel="icon" href="img/favicon.png"></head><body><div id="result-view"><div id="result-wrapper"><span class="caption-b" id="loselink" style="display: none">Hvis du ikke allerede har gjort det, bør du <a href="#">sjekke at tabellen din for løse studietimer er riktig</a>.</span><div id="result"><div class="number"></div><span class="description">plusstimer</span></div><div href="#" onclick="show(UPDATE)" class="button"><div>Oppdater fravær</div><span class="caption-s" id="last-update"></span></div></div></div><form id="update"><h4>Hvor mange dager fravær har du på skolearena?</h4><input type="text" name="days" required="true" autocomplete="off"><info>Skriv hele dager direkte fra skolearena<br><img src="https://i.snag.gy/RLUAui.jpg"></info><h4>Hvor mange klokketimer fravær har du på skolearena?</h4><input type="text" name="hours" required="true" autocomplete="off"><info>Skriv hele klokketimer (60 min) direkte fra skolearena<br><img src="https://i.snag.gy/deH0i2.jpg"></info><div id="extra-form" class="no-overlay"><h4>Har du jobbet på elevlagsmesse, åpen dag e.l.?</h4><label><input type="radio" name="show-extra" value="false" checked="checked"> Nei</label> <label><input type="radio" name="show-extra" value="true" id="show-extra"> Ja</label></div><div id="extra-div"><h4>Hvor mange ekstratimer har du fått?</h4><input type="text" name="extra" placeholder="0" autocomplete="off"><info>F.eks. elevlagsmesse eller guide på åpen dag, <b>IKKE</b> vanlige studietimer</info></div><menu><a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a> <input type="submit" value="Send inn" style="flex:10"></menu></form><form id="losetimer"><h3>Hvilke dager har du <u>løse</u> studietimer?</h3><div class="grid-3"></div><menu><a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a> <input type="submit" value="Send inn" style="flex:10"></menu></form><pre id="output">
     <div id="authorize-div">
       <span>Du må autorisere med Google Disk:</span>
       <button onclick="handleAuthClick(event)" class="button" style="max-width: 150px; margin-top: 20px">Autoriser</button>
       <a style="display: block; margin-top: 30px" href="privacy.html">Hvorfor?</a>
     </div>
-  </pre>
-
-  <script src="js/app.js?v=1"></script>
-  <script src="js/date.js?v=1"></script>
-  <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
-</body>
-</html>
+  </pre><script>var $jscomp$templatelit$1=[":"];$jscomp$templatelit$1.raw=[":"];var $jscomp$templatelit$0=['[name="extra"]'];$jscomp$templatelit$0.raw=['[name="extra"]'];var $jscomp=$jscomp||{};$jscomp.scope={};$jscomp.arrayIteratorImpl=function(a){var b=0;return function(){return b<a.length?{done:!1,value:a[b++]}:{done:!0}}};$jscomp.arrayIterator=function(a){return{next:$jscomp.arrayIteratorImpl(a)}};
+$jscomp.makeIterator=function(a){var b="undefined"!=typeof Symbol&&Symbol.iterator&&a[Symbol.iterator];return b?b.call(a):$jscomp.arrayIterator(a)};$jscomp.arrayFromIterator=function(a){for(var b,c=[];!(b=a.next()).done;)c.push(b.value);return c};$jscomp.arrayFromIterable=function(a){return a instanceof Array?a:$jscomp.arrayFromIterator($jscomp.makeIterator(a))};$jscomp.ASSUME_ES5=!1;$jscomp.ASSUME_NO_NATIVE_MAP=!1;$jscomp.ASSUME_NO_NATIVE_SET=!1;
+$jscomp.defineProperty=$jscomp.ASSUME_ES5||"function"==typeof Object.defineProperties?Object.defineProperty:function(a,b,c){a!=Array.prototype&&a!=Object.prototype&&(a[b]=c.value)};$jscomp.getGlobal=function(a){return"undefined"!=typeof window&&window===a?a:"undefined"!=typeof global&&null!=global?global:a};$jscomp.global=$jscomp.getGlobal(this);
+$jscomp.polyfill=function(a,b,c,d){if(b){c=$jscomp.global;a=a.split(".");for(d=0;d<a.length-1;d++){var e=a[d];e in c||(c[e]={});c=c[e]}a=a[a.length-1];d=c[a];b=b(d);b!=d&&null!=b&&$jscomp.defineProperty(c,a,{configurable:!0,writable:!0,value:b})}};$jscomp.polyfill("Array.prototype.fill",function(a){return a?a:function(a,c,d){var b=this.length||0;0>c&&(c=Math.max(0,b+c));if(null==d||d>b)d=b;d=Number(d);0>d&&(d=Math.max(0,b+d));for(c=Number(c||0);c<d;c++)this[c]=a;return this}},"es6","es3");
+$jscomp.findInternal=function(a,b,c){a instanceof String&&(a=String(a));for(var d=a.length,e=0;e<d;e++){var f=a[e];if(b.call(c,f,e,a))return{i:e,v:f}}return{i:-1,v:void 0}};$jscomp.polyfill("Array.prototype.find",function(a){return a?a:function(a,c){return $jscomp.findInternal(this,a,c).v}},"es6","es3");$jscomp.SYMBOL_PREFIX="jscomp_symbol_";$jscomp.initSymbol=function(){$jscomp.initSymbol=function(){};$jscomp.global.Symbol||($jscomp.global.Symbol=$jscomp.Symbol)};
+$jscomp.Symbol=function(){var a=0;return function(b){return $jscomp.SYMBOL_PREFIX+(b||"")+a++}}();$jscomp.initSymbolIterator=function(){$jscomp.initSymbol();var a=$jscomp.global.Symbol.iterator;a||(a=$jscomp.global.Symbol.iterator=$jscomp.global.Symbol("iterator"));"function"!=typeof Array.prototype[a]&&$jscomp.defineProperty(Array.prototype,a,{configurable:!0,writable:!0,value:function(){return $jscomp.iteratorPrototype($jscomp.arrayIteratorImpl(this))}});$jscomp.initSymbolIterator=function(){}};
+$jscomp.initSymbolAsyncIterator=function(){$jscomp.initSymbol();var a=$jscomp.global.Symbol.asyncIterator;a||(a=$jscomp.global.Symbol.asyncIterator=$jscomp.global.Symbol("asyncIterator"));$jscomp.initSymbolAsyncIterator=function(){}};$jscomp.iteratorPrototype=function(a){$jscomp.initSymbolIterator();a={next:a};a[$jscomp.global.Symbol.iterator]=function(){return this};return a};
+$jscomp.iteratorFromArray=function(a,b){$jscomp.initSymbolIterator();a instanceof String&&(a+="");var c=0,d={next:function(){if(c<a.length){var e=c++;return{value:b(e,a[e]),done:!1}}d.next=function(){return{done:!0,value:void 0}};return d.next()}};d[Symbol.iterator]=function(){return d};return d};$jscomp.polyfill("Array.prototype.values",function(a){return a?a:function(){return $jscomp.iteratorFromArray(this,function(a,c){return c})}},"es8","es3");
+var CLIENT_ID="1068107389496-sapmb6nh9l85vccdke6ju2jsbv5ibs51.apps.googleusercontent.com",SCOPES=["https://www.googleapis.com/auth/spreadsheets","https://www.googleapis.com/auth/drive"],MIME="application/vnd.google-apps.spreadsheet",q=function(a){return document.querySelector(a)},range=function(a){return Array(a).fill().map(function(a,c){return c})},COMPONENTS=["#result-view","form#update","form#losetimer","pre#output"],$jscomp$destructuring$var0=$jscomp.makeIterator(COMPONENTS),RESULT=$jscomp$destructuring$var0.next().value,
+UPDATE=$jscomp$destructuring$var0.next().value,LOSETIMER=$jscomp$destructuring$var0.next().value,PRE=$jscomp$destructuring$var0.next().value,show=function(a){return a?COMPONENTS.forEach(function(b){return q(b).style.display=a===b?"block":"none"}):COMPONENTS.filter(function(a){return"block"===q(a).style.display})},VERSION={key:"tnjioe0fh34j9",title:"Plusstimer h\u00f8st 2018 (versjon 2)",template:"1xxb6kZ8qfcaK123nFBmwRFlq37ffipWKVyvXDpUdC3E",range:"Plusstimer!D7:G7",days:[0,0],hours:[0,1],extra:[0,
+2],plusstimer:[0,3],losetimer:"Plusstimer!L16:O20"},COMPATIBLE_VERSIONS=[{key:"Version sq33hhst18uu",title:"Plusstimer h\u00f8st 2018",range:"Plusstimer!D7:G7",days:[0,0],hours:[0,1],extra:[0,2]}],INCOMPATIBLE_VERSIONS=["Plusstimer 2017 h\u00f8st Panda Bever","Plusstimer 2017 h\u00f8st Ulv Rotte","Plusstimer 2018 v\u00e5r gfxksll"];
+function checkAuth(){var a=setTimeout(apiLoadErr,5E3);gapi.auth.authorize({client_id:CLIENT_ID,scope:SCOPES.join(" "),immediate:!0},function(b){return q("#authorize-div").style.display="block",handleAuthResult(b),clearTimeout(a)})}function handleAuthClick(){gapi.auth.authorize({client_id:CLIENT_ID,scope:SCOPES,immediate:!1},handleAuthResult)}function log(a,b){b&&(show(PRE),q("pre").innerHTML='<h4 class="error">'+a+"</h4>");console.log(a)}
+function showLoading(){show(PRE);q(PRE).innerHTML='<img id="loading" src="img/loading.svg">'}function handleAuthResult(a){a&&!a.error&&(showLoading(),loadGDriveApi())}function apiLoadErr(){log("Det virker som om det er noe galt. Pr\u00f8v \u00e5 bruke mobilen eller en annen PC.",!0)}function loadGDriveApi(){log("Laster inn...");gapi.client.load("drive","v2",findFile)}
+function findFile(){log("Leter etter regnearket");gapi.client.drive.files.list({q:"fullText contains '"+VERSION.key+"'"}).execute(function(a){if(a.error)401==a.error.code?checkAuth():log("En feil oppsto: "+a.error.message,!0);else{trashIncompatibles();var b=getID(a.items);b&&(loadSheetsApi(fetchAndOutputData,b,!1),setEventListener(b),"losetimer"in VERSION&&(a=q("#loselink"),a.style.display="block",a.querySelector("a").onclick=function(a){return a.preventDefault(),renderLosetimer(b)}))}})}
+function getID(a){if(a=a.find(function(a){return a.mimeType===MIME&&!a.labels.trashed}))return a.id;log("Oppretter regneark");copyFile()}function loadSheetsApi(a,b){for(var c=[],d=1;d<arguments.length;++d)c[d-1]=arguments[d];gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function(b){c.length?a.apply(null,$jscomp.arrayFromIterable(c)):a(b)})}
+function fetchAndOutputData(a,b){log("Laster inn plusstimer");"string"===typeof a?gapi.client.sheets.spreadsheets.values.get({spreadsheetId:a,range:VERSION.range}).then(function(c){var d=c.result;if(0<d.values.length){b||show(RESULT);var e=$jscomp.makeIterator(["days","hours","extra","plusstimer"].map(function(a){return d.values[VERSION[a][0]][VERSION[a][1]]}));c=e.next().value;var f=e.next().value,g=e.next().value;e=e.next().value;q("#result>.number").innerHTML=e;q(UPDATE)[0].value=c;q(UPDATE)[1].value=
+f;q(UPDATE)[2].value=g;q("#last-update").innerText="";showExtraFormIf(0<g);displayLastEditDate(a)}else log("Fant ingen data.",!0);b&&renderLosetimer(a,!0)}).catch(function(a){log("Feil: "+a.result.error.message,!0)}):log("Noe gikk galt, vennligst last inn siden p\u00e5 nytt og pr\u00f8v igjen",!0)}function displayLastEditDate(a){gapi.client.drive.files.get({fileId:a}).execute(function(a){a=a.modifiedDate;q("#last-update").innerText="(Sist endret "+formatDate(a)+")"})}
+function copyFile(){gapi.client.drive.files.copy({fileId:VERSION.template,resource:{title:VERSION.title}}).execute(function(a){COMPATIBLE_VERSIONS.length?copyFromOldSheet(a.id):loadSheetsApi(function(b){return renderLosetimer(a.id,!0)});setEventListener(a.id)})}
+function copyFromOldSheet(a){if(!COMPATIBLE_VERSIONS.length)return renderLosetimer(a,!0);log("Pr\u00f8ver \u00e5 finne et gammelt regneark");gapi.client.drive.files.list({q:COMPATIBLE_VERSIONS.map(function(a){return'fullText contains "'+a.key+'"'}).join(" or ")}).execute(function(b){if(b.error)renderLosetimer(a,!0);else{var c=b.items.find(function(a){return a.mimeType===MIME&&!a.labels.trashed});if(c){log("Fant et gammelt regneark");var d=COMPATIBLE_VERSIONS.find(function(a){return a.title===c.title})||
+COMPATIBLE_VERSIONS[0];loadSheetsApi(function(b){gapi.client.sheets.spreadsheets.values.get({spreadsheetId:c.id,range:d.range}).then(function(b){var e=$jscomp.makeIterator(["days","hours","extra"].map(function(a){return d[a]}).map(function(a){return b.result.values[a[0]][a[1]]})),f=e.next().value,k=e.next().value;e=e.next().value;updateSheet(a,f,k,e,!0);trashFile(c.id)})})}else renderLosetimer(a,!0)}})}
+function trashFile(a){log("Flytter gammelt regneark til papirkurven");gapi.client.drive.files.trash({fileId:a}).execute(function(a){a.error&&console.warn(a.error,a)})}function trashIncompatibles(){INCOMPATIBLE_VERSIONS.forEach(function(a){gapi.client.drive.files.list({q:"fullText contains '"+a+"'"}).execute(function(a){return a.items.filter(function(a){return a.mimeType==MIME&&!a.labels.trashed}).map(function(a){return a.id}).forEach(trashFile)})})}
+function updateSheet(a,b,c,d,e){e=void 0===e?!1:e;if(b&&c){show(PRE);var f=[];["days","hours","extra"].forEach(function(a){return f[VERSION[a][0]]=[]});["days","hours","extra"].forEach(function(a){return f[VERSION[a][0]][VERSION[a][1]]=eval(a)});log("Oppdaterer frav\u00e6r");gapi.client.sheets.spreadsheets.values.update({spreadsheetId:a,range:VERSION.range,valueInputOption:"USER_ENTERED",values:f}).then(function(b){fetchAndOutputData(a,e)})}else show(UPDATE)}
+function setEventListener(a){q(UPDATE).onsubmit=function(b){b.preventDefault();updateSheet.apply(null,[a].concat($jscomp.arrayFromIterable(["days","hours","extra"].map(function(a){return document.getElementsByName(a)[0].value}))))}}function showExtraFormIf(a){q("#extra-div").style.display=a?"block":"none";[].concat($jscomp.arrayFromIterable(document.getElementsByName("show-extra"))).forEach(function(b,c){return b.checked=c==a})}
+["click","keyup"].forEach(function(a){return q("#extra-form").addEventListener(a,function(a){showExtraFormIf(q("#show-extra").checked);q("#show-extra").checked||(q(UPDATE).querySelector($jscomp$templatelit$0).value="")})});
+function renderLosetimer(a,b){b=void 0===b?!1:b;if("losetimer"in VERSION){showLoading();var c=q(LOSETIMER);c.onsubmit=function(d){d.preventDefault();var e=range(5).map(function(a){return[].concat($jscomp.arrayFromIterable(c.querySelectorAll('[key="'+a+'"]'))).map(function(a){return a.value||a.innerText})}).map(function(a){return[a[0],a[1]].concat($jscomp.arrayFromIterable(a[2].split(":")))});loadSheetsApi(function(c){showLoading();gapi.client.sheets.spreadsheets.values.update({spreadsheetId:a,range:VERSION.losetimer,
+valueInputOption:"USER_ENTERED",values:e}).then(function(c){return b?show(UPDATE):fetchAndOutputData(a)}).catch(function(a){log("Det oppsto en feil: "+a.result.error.message+"\n\nLast inn siden p\u00e5 nytt for \u00e5 pr\u00f8ve igjen.",!0)})})};var d=function(a,b){return'<select key="'+b+'">\n      '+": 09:00 09:45 10:45 11:30 13:00 13:45 14:45 15:30 16:15".split(" ").map(function(b){return'<option value="'+b+'" '+(a.slice(2).join($jscomp$templatelit$1).replace(/^0/,"")===b.replace(/^0/,"")&&"selected")+
+">"+(":"!==b?b:"")+"</option>"}).join("")+"\n      </select>"};loadSheetsApi(function(b){gapi.client.sheets.spreadsheets.values.get({spreadsheetId:a,range:VERSION.losetimer}).then(function(a){show(LOSETIMER);c.querySelector(".grid-3").innerHTML="\n              <div>Ukedag</div>\n              <div>Antall l\u00f8se studietimer</div>\n              <div>N\u00e5r er studietimene ferdige?</div> "+a.result.values.map(function(a,b){return'\n                <div key="'+b+'">'+a[0]+'</div>\n                <input key="'+
+b+'" name="amount" type="number" value="'+a[1]+'">\n                '+d(a,b)}).join("")})})}else show(RESULT)}
+var formatDate=function(a){for(var b=[],c=0;c<arguments.length;++c)b[c-0]=arguments[c];b=new (Function.prototype.bind.apply(Date,[null].concat($jscomp.arrayFromIterable(b))));c=new Date;for(var d=[["getFullYear","for {} \u00e5r siden"],["getMonth","for {} m\u00e5ned((er)) siden"],["getDate","for {} dag((er)) siden"],["getHours","for {} time((r)) siden"],["getMinutes","for {} minutt((er)) siden"]].map(function(a){return{method:a[0],text:a[1]}}),e={},f=0;f<d.length;e={diff:e.diff},f++){var g=d[f],h=
+g.method;g=g.text;e.diff=b[h]()-c[h]();if(0!==e.diff)return g.replace(/\{\}/g,-e.diff).replace(/\(\((\w+)\)\)/g,function(a){return function(b,c){return-1===a.diff?"":c}}(e))}return"akkurat n\u00e5"};</script><script src="https://apis.google.com/js/client.js?onload=checkAuth"></script></body></html>
