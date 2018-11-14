@@ -59,7 +59,7 @@ input[type="text"], [type="submit"], pre, info, .button {
 /** Input information boxes */
 info {
   position: absolute;
-  margin: 22px 0 0 -142.5px;
+  margin: 20px 0 0 -142.5px;
   font-weight: 100;
   font-style: oblique;
   z-index: -100;
@@ -112,10 +112,13 @@ form:invalid>input[type="submit"], input:invalid {
   border-color: #a94442;
 }
 form#update, form#losetimer {
-  max-width: calc(210px + 74px);
+  max-width: 284px;
   width: calc(62vw + 74px);
   display: none;
   margin: auto;
+}
+form#losetimer {
+  max-width: 335px;
 }
 form#losetimer [key] {
   font-weight: 100;
