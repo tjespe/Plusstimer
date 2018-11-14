@@ -178,7 +178,7 @@ menu > *:focus {
   display: block;
   width: 62vw;
   max-width: 100%;
-  min-height: 11px;
+  min-height: 12px;
   font-size: 11px;
 }
 .caption-b {
