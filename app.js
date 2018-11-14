@@ -231,7 +231,7 @@ function copyFile() {
     })
     .execute(resp => {
       if (COMPATIBLE_VERSIONS.length) copyDataFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-      loadSheetsApi(() => fetchAndOutputData(resp.id, true));
+      else loadSheetsApi(() => fetchAndOutputData(resp.id, true));
       setEventListener(resp.id);
     });
 }
