@@ -397,7 +397,7 @@ function renderLosetimer(sheetId) {
           grid.innerHTML = `
               <div>Ukedag</div>
               <div>Antall løse studietimer</div>
-              <div>Klokkeslett ferdig</div> ` +
+              <div>Når er studietimen(e) ferdige?</div> ` +
             resp.result.values
               .map((dayData, i) => `
                 <div key="${i}">${dayData[0]}</div>
