@@ -167,9 +167,9 @@ function fetchAndOutputData(sheetId, autoShowForm) {
             key => range.values[VERSION[key][0]][VERSION[key][1]]
           );
           q("#result>.number").innerHTML = plusstimer;
-          q("#update")[0].value = days;
-          q("#update")[1].value = hours;
-          q("#update")[2].value = extra;
+          q(UPDATE)[0].value = days;
+          q(UPDATE)[1].value = hours;
+          q(UPDATE)[2].value = extra;
           q("#last-update").innerText = "";
           showExtraFormIf(extra > 0);
           displayLastEditDate(sheetId);
