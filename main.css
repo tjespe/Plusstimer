@@ -168,12 +168,17 @@ menu > *:focus {
 .description {
   font-size: 1.75em;
 }
-.caption {
+.caption-s {
   display: block;
   width: 62vw;
   max-width: 100%;
   min-height: 11px;
   font-size: 11px;
+}
+.caption-b {
+  max-width: 270px;
+  padding: 5px;
+  font-size: 12px;
 }
 
 /** Loading animation */
