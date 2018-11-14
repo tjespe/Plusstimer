@@ -55,6 +55,9 @@ input[type="text"], [type="submit"], pre, info, .button {
   display: flex;
   align-items: center;
 }
+.no-overlay {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
 
 /** Input information boxes */
 info {
