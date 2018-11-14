@@ -30,6 +30,9 @@ const VERSION = {
   losetimer: "Plusstimer!L16:O20", // The range with information about løse studietimer
 };
 
+/** Delete link to losetimer form */
+if (!VERSION.hasOwnProperty("losetimer")) q("#loseLink").remove();
+
 /**
  * The point of this array is to copy values from an existing spreadsheet so that the user does not have to re-enter them.
  * Each object in this array must have three properties:
