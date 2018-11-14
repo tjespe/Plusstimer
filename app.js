@@ -385,8 +385,8 @@ function renderLosetimer(sheetId, updateSheetAfterwards = false) {
     };
     const grid = form.querySelector(".grid-3");
     const selectTemplate = (dayData, i) =>`<select key="${i}">
-      ${["09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"]
-        .map(time => `<option value="${time}" ${dayData.slice(2).join`:`.replace(/^0/,'') === time.replace(/^0/,'') && "selected"}>${time}</option>`)
+      ${[":", "09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"]
+        .map(time => `<option value="${time}" ${dayData.slice(2).join`:`.replace(/^0/,'') === time.replace(/^0/,'') && "selected"}>${time !== ':' ? time : ''}</option>`)
         .join("")}
       </select>`;
     grid.innerHTML = `<img id="loading" src="img/loading.svg">`;
