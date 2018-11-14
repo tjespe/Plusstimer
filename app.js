@@ -121,7 +121,7 @@ function findFile() {
           if ("losetimer" in VERSION) {
             const link = q("#loselink");
             link.style.display = "block";
-            link.querySelector("a").onClick = e=>(e.preventDefault(), renderLosetimer(sheetId));
+            link.querySelector("a").onclick = e=>(e.preventDefault(), renderLosetimer(sheetId));
           }
         }
       } else if (resp.error.code == 401) {
