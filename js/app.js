@@ -87,7 +87,7 @@ function handleAuthClick() {
  * @param {string} message Text to be placed in pre element.
  * @param {boolean} error Whether or not the message is an error
  */
-function log(message, error) {
+function log(message, error = false) {
   if (error) {
     show(PRE);
     q("pre").innerHTML = `<h4 class="error">${message}</h4>`;
@@ -155,7 +155,7 @@ function findFile() {
 
 /**
  * Find ID of the right file or create a file if none exist and return ID
- * @param {array} items Array of documents in user's Drive that match the search query
+ * @param {Array} items Array of documents in user's Drive that match the search query
  */
 function getID(items) {
   const match = items.find(item => item.mimeType === MIME && !item.labels.trashed);
@@ -166,7 +166,7 @@ function getID(items) {
 /**
  * Load Sheets API client library.
  * @param {Function} callback Function to execute after loading API.
- * @param {...any} args Arguments to send to callback function.
+ * @param {...*} args Arguments to send to callback function.
  */
 function loadSheetsApi(callback, ...args) {
   gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(response => {
@@ -175,7 +175,7 @@ function loadSheetsApi(callback, ...args) {
 }
 
 /** Fetch and print the data */
-function fetchAndOutputData(sheetId, autoShowForm) {
+function fetchAndOutputData(sheetId, autoShowForm = false) {
   log("Laster inn plusstimer");
   if (typeof sheetId === "string") {
     gapi.client.sheets.spreadsheets.values
@@ -347,7 +347,7 @@ function setEventListener(sheetId) {
 /**
  * If condition is true: shows the extra form, checks the "Yes" box and unchecks the "No" box.
  * Otherwise: the opposite happens.
- * @param  {boolean} Whether or not the extra form should be shown
+ * @param {boolean} condition Whether or not the extra form should be shown
  */
 function showExtraFormIf(condition) {
   q("#extra-div").style.display = condition ? "block" : "none";
