@@ -318,8 +318,8 @@ function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   if (days && hours) {
     show(PRE);
     const values = [];
-    ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]] = []));
-    ["days", "hours", "extra"].forEach(key => (values[VERSION[key][0]][VERSION[key][1]] = eval(key)));
+    ["days", "hours", "extra"].map(key => (values[VERSION[key][0]] = [], key))
+      .forEach((key, i) => values[VERSION[key][0]][VERSION[key][1]] = [days, hours, extra][i]);
     log("Oppdaterer fravær");
     gapi.client.sheets.spreadsheets.values
       .update({
