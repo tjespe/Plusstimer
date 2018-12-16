@@ -114,7 +114,7 @@ function handleAuthResult(authResult) {
 /** Handle API load error */
 function apiLoadErr() {
   log(
-    "Det virker som om det er noe galt. Prøv å bruke mobilen eller en annen PC.",
+    "Det virker som om det er noe galt. Prøv å laste inn siden på nytt, eller å bruke mobilen eller en annen PC.",
     true
   );
 }
