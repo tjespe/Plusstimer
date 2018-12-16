@@ -23,6 +23,12 @@ h4, h6 {
 a {
   color: #337ab7;
 }
+footer {
+  position:fixed;
+  padding:20px;
+  bottom:0;
+  font-size:1.3em;
+}
 input[type="text"], input[type="number"], select, [type="submit"], pre, info, .button {
   border-radius: 5px;
   border: 1px solid #ccc;
