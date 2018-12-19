@@ -202,7 +202,7 @@ function fetchAndOutputData(sheetId, autoShowForm = false) {
           // Handle unsuccessful validation of response
           log("Fant ingen data.", true);
         }
-        if (autoShowForm) renderLosetimer(sheetId, true);
+        if (autoShowForm) show(UPDATE);
       })
       .catch(response => {
         log("Feil: " + response.result.error.message, true);
@@ -234,7 +234,7 @@ function copyFile() {
     })
     .execute(resp => {
       if (COMPATIBLE_VERSIONS.length) copyFromOldSheet(resp.id); // Check if any older, but compatible, versions of the current spreadsheet exists
-      else loadSheetsApi(_ => renderLosetimer(resp.id, true));
+      else loadSheetsApi(_ => fetchAndOutputData(resp.id, true));
       setEventListener(resp.id);
     });
 }
@@ -271,13 +271,13 @@ function copyFromOldSheet(newSheetId) {
                   days,
                   hours,
                   extra,
-                  true // Auto show form for updating lose timer TODO: get lose timer from old sheet instead
                 );
+                // TODO: get lose timer from old sheet
                 trashFile(oldSheet.id);
               });
           });
-        } else renderLosetimer(newSheetId, true);
-      } else renderLosetimer(newSheetId, true);
+        } else fetchAndOutputData(newSheetId, true);
+      } else fetchAndOutputData(newSheetId, true);
     });
 }
 
