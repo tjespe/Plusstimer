@@ -115,7 +115,11 @@ function apiLoadErr() {
 /** Load Google Drive API library. */
 function loadGDriveApi() {
   log("Laster inn...");
-  gapi.client.load("drive", "v2", findFile);
+  gapi.client.load("drive", "v2", _=>{
+    if ("sheetId" in localStorage && "versionKey" in localStorage && localStorage.versionKey === VERSION.key)
+      loadSheetsApi(fetchAndOutputData, localStorage.sheetId, false);
+    findFile();
+  });
 }
 
 /** Find the right file. */
@@ -132,6 +136,8 @@ function findFile() {
         if (sheetId) {
           loadSheetsApi(fetchAndOutputData, sheetId, false);
           setEventListener(sheetId);
+          localStorage.sheetId = sheetId;
+          localStorage.versionKey = VERSION.key;
           if ("losetimer" in VERSION) {
             const link = q("#loselink");
             link.style.display = "block";

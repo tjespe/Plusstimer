@@ -109,16 +109,21 @@ input:focus + info {
   z-index: 1000;
   opacity: 1;
 }
-form:valid>input[type="submit"], .button {
+form:valid input[type="submit"], .button {
   cursor: pointer;
 }
-form:valid>input[type="submit"]:active, .button:active {
+form:valid input[type="submit"]:active, .button:active {
   background: #ccc;
 }
-form:invalid>input[type="submit"], input:invalid {
+input:invalid {
   color: #a94442;
   background: #f2dede;
   border-color: #a94442;
+}
+form:invalid input[type="submit"] {
+  background: #ccc;
+  color: #999;
+  cursor: not-allowed;
 }
 form#update, form#losetimer {
   max-width: 284px;
@@ -194,6 +199,10 @@ menu > *:focus {
   max-width: 270px;
   padding: 5px;
   font-size: 12px;
+}
+.caption-3 {
+  font-size: 0.9em;
+  margin: -10px auto 15px;
 }
 
 /** Loading animation */

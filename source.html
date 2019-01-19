@@ -24,7 +24,7 @@
     <div id="result-wrapper">
       <span class="caption-b" id="loselink" style="display: none">Hvis du ikke allerede har gjort det, bør du <a href="#">sjekke at tabellen din for løse studietimer er riktig</a>.</span>
       <div id="result">
-        <div class="number"></div>
+        <div class="number">0</div>
         <span class="description">plusstimer</span>
       </div>
       <div href="#" onclick="show(UPDATE)" class="button">
@@ -36,11 +36,11 @@
 
   <form id="update">
     <h4>Hvor mange dager fravær har du på skolearena?</h4>
-    <input type="text" name="days" required="true" autocomplete="off">
+    <input type="text" name="days" required="true" autocomplete="off" value="0">
     <info>Skriv hele dager direkte fra skolearena<br><img src="https://i.snag.gy/RLUAui.jpg"></info>
 
     <h4>Hvor mange klokketimer fravær har du på skolearena?</h4>
-    <input type="text" name="hours" required="true" autocomplete="off">
+    <input type="text" name="hours" required="true" autocomplete="off" value="0">
     <info>Skriv hele klokketimer (60 min) direkte fra skolearena<br><img src="https://i.snag.gy/deH0i2.jpg"></info>
 
     <div id="extra-form" class="no-overlay">
@@ -63,6 +63,7 @@
 
   <form id="losetimer">
     <h3>Hvilke dager har du <u>løse</u> studietimer?</h3>
+    <div class="caption-3">Det vil si studietimer som ikke er tilknyttet noe fag.</div>
     <div class="grid-3"></div>
     <menu>
       <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
