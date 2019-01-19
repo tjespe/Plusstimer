@@ -30,37 +30,30 @@ const show = key =>
  *   {?String} losetimer   Range with information about løse studietimer
  */
 const VERSION = {
-  key: "tnjioe0fh34j9",
-  title: "Plusstimer høst 2018 (versjon 2)",
-  template: "1xxb6kZ8qfcaK123nFBmwRFlq37ffipWKVyvXDpUdC3E",
+  key: "2c15975b3cbd3189dd9a776e91da0507",
+  title: "Plusstimer vår 2019",
+  template: "1TQS9fNNx-TxM4kx8IiZTIe96acp6xLB2ERvzZ-lYNgo",
   range: "Plusstimer!D7:G7",
   days: [0, 0],
   hours: [0, 1],
   extra: [0, 2],
   plusstimer: [0, 3],
-  losetimer: "Plusstimer!L16:O20",
+  losetimer: "Plusstimer!K15:N19",
 };
 
 /**
  * Array of objects with info about previous versions of spreadsheets from the same semester as the current version @type {Array<Object>}
  * Each object can have the same properties as a VERSION object, but only `key` and `range` is required.
  */
-const COMPATIBLE_VERSIONS = [
-  {
-    key: "Version sq33hhst18uu",
-    title: "Plusstimer høst 2018",
-    range: "Plusstimer!D7:G7",
-    days: [0, 0],
-    hours: [0, 1],
-    extra: [0, 2],
-  },
-];
+const COMPATIBLE_VERSIONS = [];
 
 /** Array of keywords in old and outdated spreadsheets created by this web app that should be trashed */
 const INCOMPATIBLE_VERSIONS = [
   "Plusstimer 2017 høst Panda Bever",
   "Plusstimer 2017 høst Ulv Rotte",
   "Plusstimer 2018 vår gfxksll",
+  "Versjon ll20s0gc",
+  "tnjioe0fh34j9",
 ];
 
 /** Check if current user has authorized this application. */
