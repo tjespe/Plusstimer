@@ -197,7 +197,6 @@ function fetchAndOutputData(sheetId, autoShowForm = false) {
           q(UPDATE)[0].value = days;
           q(UPDATE)[1].value = hours;
           q(UPDATE)[2].value = extra;
-          q("#last-update").innerText = "";
           showExtraFormIf(extra > 0);
           displayLastEditDate(sheetId);
         } else {
@@ -223,7 +222,7 @@ function displayLastEditDate(sheetId) {
     })
     .execute(resp => {
       const dateStr = resp.modifiedDate;
-      q("#last-update").innerText = `(Sist endret ${formatDate(dateStr)})`;
+      q("#last-update").innerHTML = `(Sist endret ${formatDate(dateStr)})`;
     });
 }
 
