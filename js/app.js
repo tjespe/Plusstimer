@@ -139,7 +139,7 @@ function findFile() {
           localStorage.sheetId = sheetId;
           localStorage.versionKey = VERSION.key;
           if ("losetimer" in VERSION) {
-            q("#loselink").setAttribute("onclick", e=>(e.preventDefault(), renderLosetimer(sheetId)));
+            q("#loselink").setAttribute("onclick", `renderLosetimer("${sheetId}"); false`);
           }
         }
       } else if (resp.error.code == 401) {
