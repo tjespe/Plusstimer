@@ -140,7 +140,6 @@ function findFile() {
           localStorage.versionKey = VERSION.key;
           if ("losetimer" in VERSION) {
             const link = q("#loselink");
-            link.style.display = "block";
             link.querySelector("a").onclick = e=>(e.preventDefault(), renderLosetimer(sheetId));
           }
         }
@@ -415,3 +414,11 @@ function renderLosetimer(sheetId, updateSheetAfterwards = false) {
     });
   } else show(RESULT);
 }
+
+
+["https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"].forEach(url=>{
+  let link = document.createElement("link");
+  link.setAttribute("rel", "stylesheet");
+  link.setAttribute("href", url);
+  q("head").appendChild(link);
+});

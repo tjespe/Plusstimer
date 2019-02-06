@@ -20,9 +20,10 @@
   <link rel="icon" href="img/favicon.png">
 </head>
 <body>
+  <div id="loselink" class="fa fa-cog"></div>
+
   <div id="result-view">
     <div id="result-wrapper">
-      <span class="caption-b" id="loselink" style="display: none">Hvis du ikke allerede har gjort det, bør du <a href="#">sjekke at tabellen din for løse studietimer er riktig</a>.</span>
       <div id="result">
         <div class="number">0</div>
         <span class="description">plusstimer</span>
@@ -86,5 +87,8 @@
   <script src="js/app.js"></script>
   <script src="js/date.js"></script>
   <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+  <style type="text/css">
+    /* This element can be filled with CSS loaded with AJAX */
+  </style>
 </body>
 </html>
