@@ -71,6 +71,10 @@ input[type="text"], [type="submit"], pre, info, .button {
   right: 0;
   color: #777;
   cursor: pointer;
+  display: none;
+}
+#loselink[onclick] {
+  display: block;
 }
 #loselink:hover {
   color: #555;
