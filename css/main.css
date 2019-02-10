@@ -38,6 +38,7 @@ input[type="text"], input[type="number"], select, [type="submit"], pre, info, .b
   box-shadow: 0 1px 2px #ccc;
   background: #fff;
   color: inherit;
+  text-decoration:none;
 }
 input[type="text"], [type="submit"], pre, info, .button {
   -webkit-appearance: none;
@@ -71,16 +72,30 @@ input[type="text"], [type="submit"], pre, info, .button {
   right: 0;
   color: #777;
   cursor: pointer;
-  display: none;
+  background:none;
+  border:none;
+  opacity:0;
+  transition: opacity 0.25s ease-in-out;
+  text-decoration: none;
 }
 #loselink[onclick] {
-  display: block;
+  opacity: 1;
 }
 #loselink:hover {
   color: #555;
 }
 #loselink:active {
   color: #000;
+}
+#losetimer[style*="display: block"] + #loselink, #losetimer[style*="display:block"] + #loselink {
+  opacity: 0;
+  cursor: inherit;
+}
+span {
+  transition: opacity 0.25s ease-in-out;
+}
+span:empty {
+  opacity: 0;
 }
 
 /** Input information boxes */
@@ -165,14 +180,11 @@ menu {
 menu > * {
   margin-right: 5px;
 }
-menu > *:last-child {
+menu > :last-child {
   margin-right: 0;
 }
-menu > *:active {
+menu > :active {
   background: #ddd;
-}
-menu > *:focus {
-  outline: 0;
 }
 
 /** Result display */
@@ -186,7 +198,7 @@ menu > *:focus {
   height: 100%;
   justify-content: center;
 }
-#result-wrapper > div {
+#result-wrapper > * {
   width: 62vw;
   max-width: 210px;
   margin: 5px;

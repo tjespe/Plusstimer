@@ -20,18 +20,16 @@
   <link rel="icon" href="img/favicon.png">
 </head>
 <body>
-  <div id="loselink" class="fa fa-cog"></div>
-
   <div id="result-view">
     <div id="result-wrapper">
       <div id="result">
         <div class="number">0</div>
         <span class="description">plusstimer</span>
       </div>
-      <div href="#" onclick="show(UPDATE)" class="button">
+      <a href="#" onclick="show(UPDATE)" class="button">
         <div>Oppdater fravær</div>
         <span class="caption-s" id="last-update"><span style="color: white">.</span></span>
-      </div>
+      </a>
     </div>
   </div>
 
@@ -57,7 +55,7 @@
     </div>
 
     <menu>
-      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
+      <a href="#" class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>
@@ -67,10 +65,12 @@
     <div class="caption-3">Det vil si studietimer som ikke er tilknyttet noe fag.</div>
     <div class="grid-3"></div>
     <menu>
-      <a class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
+      <a href="#" class="button" style="flex:1" onclick="show(RESULT)">&lt;</a>
       <input type="submit" value="Send inn" style="flex:10">
     </menu>
   </form>
+
+  <a href="#" id="loselink" class="fa fa-cog"></a>
 
   <pre id="output">
     <div id="authorize-div">

@@ -214,14 +214,16 @@ function fetchAndOutputData(sheetId, autoShowForm = false) {
 
 /** Get last edit date and display it in the result view */
 function displayLastEditDate(sheetId) {
-  gapi.client.drive.files
-    .get({
+  const el = q("#last-update");
+  el.innerHTML = '';
+  setTimeout(_=>gapi.client.drive.files
+  .get({
       fileId: sheetId,
     })
     .execute(resp => {
       const dateStr = resp.modifiedDate;
-      q("#last-update").innerHTML = `(Sist endret ${formatDate(dateStr)})`;
-    });
+      el.innerHTML = `(Sist endret ${formatDate(dateStr)})`;
+    }), 500);
 }
 
 /** Copy a spreadsheet file from public template because no existing file was found */
@@ -364,7 +366,7 @@ function showExtraFormIf(condition) {
 /** Render form that allows user to set when their løse studietimer is */
 function renderLosetimer(sheetId, updateSheetAfterwards = false) {
   if ("losetimer" in VERSION) {
-    showLoading();
+    if (!show().includes("form#losetimer")) showLoading();
     const form = q(LOSETIMER);
     form.onsubmit = event=>{
       event.preventDefault();
@@ -388,7 +390,7 @@ function renderLosetimer(sheetId, updateSheetAfterwards = false) {
     };
     const selectTemplate = (dayData, i) =>`<select key="${i}">
       ${[":", "09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"]
-        .map(time => `<option value="${time}" ${dayData.slice(2).join`:`.replace(/^0/,'') === time.replace(/^0/,'') && "selected"}>${time !== ':' ? time : ''}</option>`) // TODO: The replace methods can be removed the next time VERSION is updated (currently at tnjioe0fh34j9)
+        .map(time => `<option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time !== ':' ? time : ''}</option>`)
         .join("")}
       </select>`;
     loadSheetsApi(_ => {
