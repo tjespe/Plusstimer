@@ -27,25 +27,35 @@ const show = key =>
  *   {Array<number>} days  The vertical and horizontal position of days in the range, respectively
  *   {Array<number>} hours The vertical and horizontal position of hours in the range, respectively
  *   {Array<number>} extra The vertical and horizontal position of extra hours in the range, respectively
- *   {?String} losetimer   Range with information about løse studietimer
+ *   {?String} losetimer   Range with information about løse studietimer (must follow standard format)
  */
 const VERSION = {
-  key: "2c15975b3cbd3189dd9a776e91da0507",
+  key: "ba20e7c6932aff82e4cce69e9693fb2f",
   title: "Plusstimer vår 2019",
-  template: "1TQS9fNNx-TxM4kx8IiZTIe96acp6xLB2ERvzZ-lYNgo",
+  template: "1IUZTdlJlaKUEuQXE4SzRbByYjGW7rnGjTeT-QDFDk2o",
   range: "Plusstimer!D7:G7",
   days: [0, 0],
   hours: [0, 1],
   extra: [0, 2],
   plusstimer: [0, 3],
-  losetimer: "Plusstimer!K15:N19",
+  losetimer: "Plusstimer!M15:N19",
 };
 
 /**
  * Array of objects with info about previous versions of spreadsheets from the same semester as the current version @type {Array<Object>}
  * Each object can have the same properties as a VERSION object, but only `key` and `range` is required.
+ * The only difference is that the losetimer prop should be an array of two numbers, the column and the first row of the losetimer cells in the range (and the losetimer cells must be 5 cells directly underneath each other)
  */
-const COMPATIBLE_VERSIONS = [];
+const COMPATIBLE_VERSIONS = [{
+  key: "2c15975b3cbd3189dd9a776e91da0507",
+  title: "Plusstimer vår 2019",
+  template: "1TQS9fNNx-TxM4kx8IiZTIe96acp6xLB2ERvzZ-lYNgo",
+  range: "Plusstimer!D7:L19",
+  days: [0, 0],
+  hours: [0, 1],
+  extra: [0, 2],
+  losetimer: "Plusstimer!K15:L19",
+}];
 
 /** Array of keywords in old and outdated spreadsheets created by this web app that should be trashed */
 const INCOMPATIBLE_VERSIONS = [
@@ -176,6 +186,7 @@ function loadSheetsApi(callback, ...args) {
 
 /** Fetch and print the data */
 function fetchAndOutputData(sheetId, autoShowForm = false) {
+  console.log("fetchAndOutputData called with sheetId", sheetId)
   log("Laster inn plusstimer");
   if (typeof sheetId === "string") {
     gapi.client.sheets.spreadsheets.values
@@ -188,14 +199,9 @@ function fetchAndOutputData(sheetId, autoShowForm = false) {
         // Validate response and print result
         if (range.values.length > 0) {
           if (!autoShowForm) show(RESULT);
-          const [days, hours, extra, plusstimer] = ["days", "hours", "extra", "plusstimer"].map(
-            key => range.values[VERSION[key][0]][VERSION[key][1]]
-          );
-          q("#result>.number").innerHTML = plusstimer;
-          q(UPDATE)[0].value = days;
-          q(UPDATE)[1].value = hours;
-          q(UPDATE)[2].value = extra;
-          showExtraFormIf(extra > 0);
+          ["days", "hours", "extra"].forEach(key=>q(UPDATE).querySelector(`[name="${key}"]`).value = range.values[VERSION[key][0]][VERSION[key][1]]);
+          q("#result>.number").innerHTML = range.values[VERSION.plusstimer[0]][VERSION.plusstimer[1]];
+          showExtraFormIf(range.values[VERSION.extra[0]][VERSION.extra[1]] > 0);
           displayLastEditDate(sheetId);
         } else {
           // Handle unsuccessful validation of response
@@ -267,14 +273,21 @@ function copyFromOldSheet(newSheetId) {
                 const [days, hours, extra] = ["days", "hours", "extra"].map(key => version[key]).map(
                   coords => resp.result.values[coords[0]][coords[1]]
                 );
-                updateSheet(
-                  newSheetId,
-                  days,
-                  hours,
-                  extra,
-                  true // Auto show form for updating lose timer TODO: get lose timer from old sheet instead
-                );
-                trashFile(oldSheet.id);
+                if (version.losetimer) {
+                  gapi.client.sheets.spreadsheets.values.get({
+                    // Get losetimer from sheet
+                    spreadsheetId: oldSheet.id,
+                    range: version.losetimer,
+                  }).then(resp => {
+                    updateLoseTimer(newSheetId, resp.result.values, ()=>{
+                      trashFile(oldSheet.id);
+                      updateSheet(newSheetId, days, hours, extra, false);
+                    }, version)
+                  })
+                } else {
+                  updateSheet(newSheetId, days, hours, extra, true);
+                  trashFile(oldSheet.id);
+                }
               });
           });
         } else renderLosetimer(newSheetId, true);
@@ -319,8 +332,9 @@ function updateSheet(sheetId, days, hours, extra, autoShowForm = false) {
   if (days && hours) {
     show(PRE);
     const values = [];
-    ["days", "hours", "extra"].map(key => (values[VERSION[key][0]] = [], key))
-      .forEach((key, i) => values[VERSION[key][0]][VERSION[key][1]] = [days, hours, extra][i]);
+    const keys = ["days", "hours", "extra"]
+    keys.forEach(key => values[VERSION[key][0]] = []);
+    keys.forEach((key, i) => values[VERSION[key][0]][VERSION[key][1]] = [days, hours, extra][i]);
     log("Oppdaterer fravær");
     gapi.client.sheets.spreadsheets.values
       .update({
@@ -363,36 +377,41 @@ function showExtraFormIf(condition) {
   })
 );
 
+/**
+ * Updates losetimer cell values in sheet
+ *
+ * @param      {string}    sheetId                The sheet identifier
+ * @param      {Array}     values                 The data that should be saved in the sheet (Array<[weekday: string, losetimer: number]>)
+ * @param      {Function}  callback               Callback function
+ */
+function updateLoseTimer(sheetId, values, callback = false) {
+  loadSheetsApi(_ => {
+    showLoading();
+    gapi.client.sheets.spreadsheets.values
+      .update({
+        spreadsheetId: sheetId,
+        range: VERSION.losetimer,
+        valueInputOption: "USER_ENTERED",
+        values: values,
+      })
+      .then(callback ? callback : ()=>fetchAndOutputData(sheetId))
+      .catch(resp=>{
+        log("Det oppsto en feil: "+resp.result.error.message+"\n\nLast inn siden på nytt for å prøve igjen.", true);
+      });
+  });
+}
+
 /** Render form that allows user to set when their løse studietimer is */
-function renderLosetimer(sheetId, updateSheetAfterwards = false) {
+function renderLosetimer(sheetId, showFormAfterwards = false) {
   if ("losetimer" in VERSION) {
     if (!show().includes("form#losetimer")) showLoading();
     const form = q(LOSETIMER);
     form.onsubmit = event=>{
       event.preventDefault();
       const values = range(5)
-        .map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText))
-        .map(arr=>[arr[0], arr[1], ...arr[2].split(':')]);
-      loadSheetsApi(_ => {
-        showLoading();
-        gapi.client.sheets.spreadsheets.values
-          .update({
-            spreadsheetId: sheetId,
-            range: VERSION.losetimer,
-            valueInputOption: "USER_ENTERED",
-            values: values,
-          })
-          .then(_=>updateSheetAfterwards ? show(UPDATE) : fetchAndOutputData(sheetId))
-          .catch(resp=>{
-            log("Det oppsto en feil: "+resp.result.error.message+"\n\nLast inn siden på nytt for å prøve igjen.", true);
-          });
-      });
+        .map(i=>[...form.querySelectorAll(`[key="${i}"]`)].map(el=>el.value || el.innerText));
+      updateLoseTimer(sheetId, values, showFormAfterwards ? ()=>show(UPDATE) : false);
     };
-    const selectTemplate = (dayData, i) =>`<select key="${i}">
-      ${[":", "09:00", "09:45", "10:45", "11:30", "13:00", "13:45", "14:45", "15:30", "16:15"]
-        .map(time => `<option value="${time}" ${dayData.slice(2).join`:` === time && "selected"}>${time !== ':' ? time : ''}</option>`)
-        .join("")}
-      </select>`;
     loadSheetsApi(_ => {
       gapi.client.sheets.spreadsheets.values
         .get({
@@ -401,15 +420,13 @@ function renderLosetimer(sheetId, updateSheetAfterwards = false) {
         })
         .then(resp => {
           show(LOSETIMER);
-          form.querySelector(".grid-3").innerHTML = `
+          form.querySelector(".grid-2").innerHTML = `
               <div>Ukedag</div>
-              <div>Antall løse studietimer</div>
-              <div>Når er studietimene ferdige?</div> `
+              <div>Antall løse studietimer</div>`
             + resp.result.values
               .map((dayData, i) => `
                 <div key="${i}">${dayData[0]}</div>
-                <input key="${i}" name="amount" type="number" value="${dayData[1]}">
-                ${selectTemplate(dayData, i)}`
+                <input key="${i}" name="amount" type="number" value="${dayData[1]}">`
               ).join("");
         });
     });

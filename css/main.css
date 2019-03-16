@@ -52,13 +52,12 @@ input[type="text"], [type="submit"], pre, info, .button {
 #extra-div {
   display: none;
 }
-.grid-3 {
+.grid-2 {
   display: grid;
-  grid-template-areas: ". . .";
+  grid-template-areas: ". .";
   grid-gap: 10px;
-  grid-template-columns: 20% 40% 33%;
 }
-.grid-3 > * {
+.grid-2 > * {
   display: flex;
   align-items: center;
 }
